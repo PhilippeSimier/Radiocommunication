@@ -5,30 +5,6 @@
       <df name="include">
       </df>
       <df name="lib">
-        <df name="DdsI2s">
-          <in>DdsI2s.cpp</in>
-          <in>DdsI2s.h</in>
-        </df>
-        <df name="DRA818">
-          <in>DRA818.cpp</in>
-          <in>DRA818.h</in>
-        </df>
-        <df name="Fx25">
-          <in>Fx25.cpp</in>
-          <in>Fx25.h</in>
-        </df>
-        <df name="Position">
-          <in>Position.cpp</in>
-          <in>Position.h</in>
-        </df>
-        <df name="Rs">
-          <in>Rs.cpp</in>
-          <in>Rs.h</in>
-        </df>
-        <df name="Weather">
-          <in>Weather.cpp</in>
-          <in>Weather.h</in>
-        </df>
       </df>
       <df name="src">
         <in>main.cpp</in>
@@ -47,13 +23,13 @@
       </toolsSet>
       <compile>
         <compiledirpicklist>
-          <compiledirpicklistitem>.</compiledirpicklistitem>
           <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
         </compiledirpicklist>
         <compiledir>${AUTO_FOLDER}</compiledir>
         <compilecommandpicklist>
-          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
           <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
         </compilecommandpicklist>
         <compilecommand>${AUTO_COMPILE}</compilecommand>
       </compile>
@@ -75,6 +51,7 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem></runcommandpicklistitem>
           <runcommandpicklistitem>pio run --target upload</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>pio run --target upload</runcommand>
