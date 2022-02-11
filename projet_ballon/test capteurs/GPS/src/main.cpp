@@ -19,82 +19,66 @@
 #include <TinyGPS.h>   // GPS
 #include <HardwareSerial.h>
 
-#include <SSD1306Wire.h>  // OLED driver for SSD1306
-#include <NeoPixelBus.h>  // Led RGB WS2812
+#include <Afficheur.h>    // Afficheur SSD1306
+#include <Led.h>          // Led RGB    
+#include <LM75A.h>
 
-#define PIN_RGB     15   
-#define NUMPIXELS   1
-
-RgbColor rouge(8, 0, 0);
-RgbColor  vert(0, 4, 0);
-
-static void afficher_heure(TinyGPS &gps);
 static bool lectureGPS(unsigned long ms);
-void afficher(String message);
-static void allumer(NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0800KbpsMethod> &led, RgbColor couleur);
+
 
 TinyGPS gps;
 HardwareSerial serialGps(2); // sur hardware serial 2
-SSD1306Wire display(0x3c, SDA, SCL, GEOMETRY_128_64);
-NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0800KbpsMethod> led(NUMPIXELS, PIN_RGB);
+
+Afficheur *afficheur;
+Led *led;
+LM75A CapteurLM75A;
+
+int page;
 
 void setup() {
     Serial.begin(115200);
     serialGps.begin(4800, SERIAL_8N1, 16, 17);
-    delay(1000);
-    Serial.print("Simple TinyGPS library v. ");
-    Serial.println(TinyGPS::library_version());
+    pinMode(34, INPUT); // BP en entrée
+    delay(100);
 
-    display.init();
-    display.setFont(ArialMT_Plain_24);
-    afficher("Syn GPS");
-    
-    led.Begin();
-    allumer(led, rouge);
-    
+    afficheur = new Afficheur;
+    afficheur->afficher("Syn GPS");
+
+    led = new Led;
+    led->allumerRouge();
+
+    page = 0;
+
 }
 
 void loop() {
-     
+
+    
+    if (++page == 6)
+        page = 0;
+    
     if (lectureGPS(1000)) {
-        float flat, flon;
-        unsigned long age;
-        gps.f_get_position(&flat, &flon, &age);
-        Serial.print(" Latitude = ");
-        Serial.print(flat == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flat, 6);
-        Serial.print(" Longitude = ");
-        Serial.print(flon == TinyGPS::GPS_INVALID_F_ANGLE ? 0.0 : flon, 6);
-        Serial.print(" Altitude = ");
-        Serial.println(gps.f_altitude());
-        Serial.print(" Nb Satellites = ");
-        Serial.println(gps.satellites() == TinyGPS::GPS_INVALID_SATELLITES ? 0 : gps.satellites());
-        afficher_heure(gps);
-        allumer(led, vert);
-    }else{
-        afficher("Syn GPS");
-        allumer(led, rouge);
-        
-    }
-}
+        switch (page) {
+            case 0:
+                afficheur->afficherHeure(gps);
+                break;
+            case 2:
+                afficheur->afficherPosition(gps);
+                break;
+            case 4:
+                afficheur->afficherFloat("Temp : ", CapteurLM75A.getTemperature());
+                break;
+        }
 
-/**
- * 
- * @param gps une référence sur le capteur GPS
- */
-static void afficher_heure(TinyGPS &gps) {
-    int year;
-    byte month, day, hour, minute, second, hundredths;
-    unsigned long age;
-    char sz[32] = "******";
-    unsigned short nb = gps.satellites();
-    gps.crack_datetime(&year, &month, &day, &hour, &minute, &second, &hundredths, &age);
 
-    if (age != TinyGPS::GPS_INVALID_AGE) {
-        sprintf(sz, "%02d:%02d:%02d  nb Sat: %d", hour, minute, second, nb);
+        led->allumerVert();
+
+    } else {
+        afficheur->afficher("Syn GPS");
+        led->allumerRouge();
+
     }
-    Serial.print(sz);
-    String message(sz);
-    afficher(message);
+    Serial.println(CapteurLM75A.getTemperature());
 }
 
 /**
@@ -114,23 +98,7 @@ static bool lectureGPS(unsigned long ms) {
     return newData;
 }
 
-/**
- * 
- * @param message String le message à afficher sur l'écran oled
- */
-void afficher(String message) {
-    display.clear();
-    display.drawStringMaxWidth(0, 0, 110, message);
-    display.display();
-}
 
-/**
- * 
- * @param led une référence sur une led RGB
- * @param couleur une couleur de type RgbColor
- */
-static void allumer(NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0800KbpsMethod> &led, RgbColor couleur) {
-    led.SetPixelColor(0, couleur);
-    led.Show();
-}
+
+
 

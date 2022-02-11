@@ -5,6 +5,18 @@
       <df name="include">
       </df>
       <df name="lib">
+        <df name="Afficheur">
+          <in>Afficheur.cpp</in>
+          <in>Afficheur.h</in>
+        </df>
+        <df name="Led">
+          <in>Led.cpp</in>
+          <in>Led.h</in>
+        </df>
+        <df name="LM75A">
+          <in>LM75A.cpp</in>
+          <in>LM75A.h</in>
+        </df>
       </df>
       <df name="src">
         <in>main.cpp</in>
