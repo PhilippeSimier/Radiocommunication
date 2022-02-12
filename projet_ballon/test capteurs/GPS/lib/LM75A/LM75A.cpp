@@ -15,9 +15,14 @@ using namespace LM75AConstValues;
  * @param A0 adresse i2c
  * @param A1 adresse i2c
  * @param A2 adresse i2c
+ * @paran _offset float valeur de offset en degré celsius
+ * @param _scale  float valeur de l'echelle normalement 0.125 °C par unite de registre
  */
-LM75A::LM75A(bool A0, bool A1, bool A2) :
-i2c_device_address(BASE_ADDRESS) {
+LM75A::LM75A(bool A0, bool A1, bool A2, float _offset, float _scale) :
+i2c_device_address(BASE_ADDRESS),
+        offset(_offset),
+        scale(_scale)
+{
     if (A0) i2c_device_address += 1;
     if (A1) i2c_device_address += 2;
     if (A2) i2c_device_address += 4;
@@ -63,12 +68,12 @@ float LM75A::getTemperature() const {
         // When sign bit is set, set upper unused bits, then 2's complement
         refactored_value |= 0xf800;
         refactored_value = ~refactored_value + 1;
-        real_value = (float) refactored_value * (-1) * DEGREES_RESOLUTION;
+        real_value = (float) refactored_value * (-1) * scale;
     } else {
-        real_value = (float) refactored_value * DEGREES_RESOLUTION;
+        real_value = (float) refactored_value * scale;
     }
 
-    return real_value;
+    return real_value + offset;
 
 }
 

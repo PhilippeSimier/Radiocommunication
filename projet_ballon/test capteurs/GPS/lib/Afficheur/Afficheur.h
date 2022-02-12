@@ -24,7 +24,7 @@ public:
     void afficher(String message);
     void afficherHeure(TinyGPS &gps);
     void afficherPosition(TinyGPS &gps);
-    void afficherFloat(String message, float valeur);
+    void afficherFloat(String message, float valeur, String unite);
     
 private:
 

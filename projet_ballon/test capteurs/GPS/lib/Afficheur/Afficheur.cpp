@@ -71,16 +71,17 @@ void Afficheur::afficherPosition(TinyGPS &gps) {
 }
 
 /**
- * Méthode pour afficher une grandeur
+ * Méthode pour afficher une grandeur physique
  * @param char* message le libellé
  * @param valeur  la valeur à afficher
+ * @param unite   l'unite de la grandeur
  */
-void Afficheur::afficherFloat(String message, float valeur) {
+void Afficheur::afficherFloat(String message, float valeur, String unite) {
 
     char sz[16] = "******";
     snprintf(sz, sizeof(sz), "%.2f", valeur);
     String valst(sz);
-    afficher(message + valst);
+    afficher(message + valst + unite);
 
 }
 
