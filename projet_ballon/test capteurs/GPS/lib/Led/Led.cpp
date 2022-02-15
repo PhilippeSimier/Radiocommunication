@@ -7,25 +7,31 @@
 
 #include "Led.h"
 
+
+
 // Constructeur de Led
 Led::Led(): 
-NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0800KbpsMethod>(NUMPIXELS, PIN_RGB) 
+NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0800KbpsMethod>(NUMPIXELS, PIN_RGB)       
 {
     Begin();
+    
 }
 
 Led::~Led() {
 }
 
-void Led::allumerRouge(){
-    RgbColor rouge(8, 0, 0);
-    SetPixelColor(0, rouge);
+/**
+ * Allume la led avec la couleur demandée
+ * @param couleur RgbColor une couleur 
+ */
+
+void Led::allumer(const RgbColor &couleur){
+    SetPixelColor(0, couleur);
     Show();
 }
 
-void Led::allumerVert(){
-    RgbColor vert(0, 4, 0);
-    SetPixelColor(0, vert);
+void Led::eteindre(){
+    SetPixelColor(0, RgbColor(0,0,0));
     Show();
 }
 

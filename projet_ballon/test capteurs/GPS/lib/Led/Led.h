@@ -23,9 +23,9 @@ public:
     Led();
     virtual ~Led();
     
-    void allumerRouge();
-    void allumerVert();
-
+    void allumer(const RgbColor &couleur);
+    void eteindre();
+  
 private:
 
 };
