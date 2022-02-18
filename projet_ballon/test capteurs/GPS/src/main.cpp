@@ -1,6 +1,6 @@
 /* 
  * File:   main.cpp
- * Author: philippe SIMIER
+ * Author: philippe SIMIER Touchard Washington Le Mans
  *
  * Created on 9 février 2022, 17:11
  * 
@@ -13,14 +13,15 @@
  * Bibliothèque : Oled 
  * installation : pio lib -g install 2978
  * 
- * Bibliothèque Max31855 Thermocouple
- * installation : pio lib -g install 84
+ * Bibliothèque : SparkFun MAX31855K Thermocouple Digitizer @ 1.0.0
+ * installation : pio lib -g install 866
  * 
  * Bibliothèque : BME280 @ 3.0.0
  * installation : pio lib -g install 901
  * 
  * Bibliothèque : RadiationWatch @ 0.6.4 
  * installation : pio lib -g install 1523
+ * 
  */
 
 #include <Arduino.h>
@@ -31,10 +32,33 @@
 #include <Afficheur.h>          // Afficheur SSD1306
 #include <Led.h>                // Led RGB    
 #include <LM75A.h>              // LM75A température intérieure
-#include <Adafruit_MAX31855.h>  // Température thermocouple extérieure
+#include <SparkFunMAX31855k.h>  // Température thermocouple extérieure
 #include <BME280I2C.h>          // Capteur Pression humidité température
 #include <RadiationWatch.h>     // Capteur de radiation
+#include <MsdCard.h>            // Carte SD
 
+#define SD_CS 5                 //Chip select SD Card
+#define TM_CS 4                 //Chip select Thermocouple
+
+typedef struct {
+    byte heure;
+    byte minute;
+    byte seconde;
+    float latitude;
+    float longitude;
+    float altitude;
+    unsigned short nbSat;
+    float tempBME;
+    float tempInt;
+    float tempExt;
+    float humidite;
+    float pression;
+    float cpm;
+    float uSvh;
+
+} typeData;
+
+typeData data;
 
 // Les prototypes
 static bool lectureGPS(unsigned long ms);
@@ -44,30 +68,44 @@ void tacheRadiations(void* parameter);
 
 
 TinyGPS gps;
-HardwareSerial serialGps(2); // sur hardware serial 2
+HardwareSerial serialGps(2); // GPS sur hardware serial 2
 
 Afficheur *afficheur;
 Led *led;
 LM75A CapteurLM75A(false, false, false, -1.5); // la valeur de l'offset est déterminée par la calibration
-Adafruit_MAX31855 thermocouple(4);
+
+SparkFunMAX31855k thermocouple(TM_CS, 2, 2);
+MsdCard carteSD; // Avec l'affectation des broches standard de la liaison SPI SD_CS 5
+
 
 BME280I2C *bme;
 RadiationWatch radiationWatch(32, 33);
 
 int page;
+char ligneCSV[200];
+int year;
+byte month, day, hundredths;
+unsigned long age;
 
 void setup() {
+
     Serial.begin(115200);
     serialGps.begin(4800, SERIAL_8N1, 16, 17);
     pinMode(34, INPUT); // BP en entrée
-    delay(100);
+    digitalWrite(2, LOW); // extinction des led sur GPIO2
 
     led = new Led;
-    led->allumer(RgbColor(8, 0, 0)); // rouge
-
+    led->allumer(ROUGE); // rouge
     afficheur = new Afficheur;
 
-    afficheur->afficher("Could not find bme");
+    afficheur->afficher("Erreur CarteSD"); // test de la carte SD
+    while (!carteSD.begin()) {
+        delay(3000);
+    }
+    carteSD.fwrite("/dataBallon.csv",
+            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm\n");
+
+    afficheur->afficher("Erreur BME280"); // test du capteur BME280
     BME280I2C::Settings setBme(
             BME280::OSR_X1,
             BME280::OSR_X1,
@@ -102,49 +140,83 @@ void setup() {
 
 void loop() {
 
-    //radiationWatch.loop();
+    if (++page == 17) page = 0;
 
-    if (++page == 17)
-        page = 0;
+    bme->read(data.pression, // Lecture du capteur BME
+            data.tempBME,
+            data.humidite,
+            BME280::TempUnit_Celsius,
+            BME280::PresUnit_hPa);
 
-    BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
-    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
-    float temp(NAN), hum(NAN), pres(NAN);
-    bme->read(pres, temp, hum, tempUnit, presUnit);
+    data.tempInt = CapteurLM75A.getTemperature(); // Lecture du capteur LM75A
+    data.tempExt = thermocouple.readTempC(); // Leture du thermocouple
+    data.uSvh = radiationWatch.uSvh(); // Lecture de la dose de radiation
+    data.cpm = radiationWatch.cpm(); // lecture du nombre de déclenchement
 
     if (lectureGPS(1000)) {
-        led->allumer(RgbColor(0, 4, 0)); // Vert
+        led->allumer(VERT); // Vert
+        data.nbSat = gps.satellites(); // Lecture du nb de satellites
+        // Lecture de l'heure GPS
+        gps.crack_datetime(&year, &month, &day, &data.heure, &data.minute, &data.seconde, &hundredths, &age);
+        // Lecture de la position
+        gps.f_get_position(&data.latitude, &data.longitude, &age);
+        data.altitude = gps.f_altitude();
+
         switch (page) {
             case 0: case 1: case 2:
                 afficheur->afficherHeure(gps);
                 break;
+
             case 3:
                 afficheur->afficherPosition(gps);
                 break;
+
             case 5:
-                afficheur->afficherFloat("Temp int ", CapteurLM75A.getTemperature(), " °C");
+                afficheur->afficherFloat("Temp int ", data.tempInt, " °C");
                 break;
+
             case 7:
-                afficheur->afficherFloat("Temp ext ", (float) thermocouple.readCelsius(), " °C");
+                thermocouple.readTempC();
+                afficheur->afficherFloat("Temp ext ", data.tempExt, " °C");
                 break;
+
             case 9:
-                afficheur->afficherFloat("Pression ", pres / 100, "hPa");
+                afficheur->afficherFloat("Pression ", data.pression, "hPa");
                 break;
+
             case 11:
-                afficheur->afficherFloat("Humidite ", hum, " %");
+                afficheur->afficherFloat("Humidite ", data.humidite, " %");
                 break;
+
             case 13:
-                afficheur->afficherFloat("Radiation ", radiationWatch.uSvh(), " uSvh");
+                afficheur->afficherFloat("Radiation ", data.uSvh, " uSvh");
                 break;
+
             case 15:
-                afficheur->afficherFloat("Radiation ", radiationWatch.cpm(), " cpm");
+                afficheur->afficherFloat("Radiation ", data.cpm, " cpm");
+                break;
+
+            case 16:
+                snprintf(ligneCSV, sizeof (ligneCSV), "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
+                        data.heure,
+                        data.minute,
+                        data.seconde,
+                        data.nbSat,
+                        data.latitude,
+                        data.longitude,
+                        data.altitude,
+                        data.tempInt,
+                        data.tempBME,
+                        data.tempExt,
+                        data.pression,
+                        data.humidite,
+                        data.uSvh,
+                        data.cpm);
+                Serial.println(ligneCSV);
+                carteSD.fputs("/dataBallon.csv", ligneCSV);
                 break;
 
         }
-
-
-
-
     } else {
         afficheur->afficher("Syn GPS");
         led->allumer(RgbColor(8, 0, 0)); // Rouge 

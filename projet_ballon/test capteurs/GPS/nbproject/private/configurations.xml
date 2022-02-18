@@ -17,6 +17,10 @@
           <in>LM75A.cpp</in>
           <in>LM75A.h</in>
         </df>
+        <df name="MsdCard">
+          <in>MsdCard.cpp</in>
+          <in>MsdCard.h</in>
+        </df>
       </df>
       <df name="src">
         <in>main.cpp</in>
