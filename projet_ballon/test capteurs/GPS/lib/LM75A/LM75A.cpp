@@ -1,6 +1,6 @@
 /* 
  * File:   LM75A.cpp
- * Author: philippe SIMIER
+ * Author: philippe SIMIER Touchard Washington Le Mans
  *         Quentin Comte-Gaz <quentin@comte-gaz.com>
  * 
  * Created on 11 février 2022, 16:12

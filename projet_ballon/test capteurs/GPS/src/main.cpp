@@ -72,7 +72,7 @@ HardwareSerial serialGps(2); // GPS sur hardware serial 2
 
 Afficheur *afficheur;
 Led *led;
-LM75A CapteurLM75A(false, false, false, -1.5); // la valeur de l'offset est déterminée par la calibration
+LM75A CapteurLM75A(false, false, false, 0); // la valeur de l'offset est déterminée par la calibration
 
 SparkFunMAX31855k thermocouple(TM_CS, 2, 2);
 MsdCard carteSD; // Avec l'affectation des broches standard de la liaison SPI SD_CS 5
@@ -134,13 +134,10 @@ void setup() {
 
     afficheur->afficher("Syn GPS");
 
-    page = 0; // Le numéro de la page à afficher
-
 }
 
 void loop() {
 
-    if (++page == 17) page = 0;
 
     bme->read(data.pression, // Lecture du capteur BME
             data.tempBME,
@@ -157,64 +154,77 @@ void loop() {
         led->allumer(VERT); // Vert
         data.nbSat = gps.satellites(); // Lecture du nb de satellites
         // Lecture de l'heure GPS
-        gps.crack_datetime(&year, &month, &day, &data.heure, &data.minute, &data.seconde, &hundredths, &age);
+        gps.crack_datetime(&year,
+                &month,
+                &day,
+                &data.heure,
+                &data.minute,
+                &data.seconde,
+                &hundredths,
+                &age);
         // Lecture de la position
         gps.f_get_position(&data.latitude, &data.longitude, &age);
         data.altitude = gps.f_altitude();
 
-        switch (page) {
-            case 0: case 1: case 2:
+        switch (data.seconde) {
+            case 0: case 1: case 2: case 3: case 4: case 5:
                 afficheur->afficherHeure(gps);
                 break;
 
-            case 3:
+            case 6:
                 afficheur->afficherPosition(gps);
                 break;
 
-            case 5:
+            case 12:
                 afficheur->afficherFloat("Temp int ", data.tempInt, " °C");
                 break;
 
-            case 7:
-                thermocouple.readTempC();
+            case 18:
                 afficheur->afficherFloat("Temp ext ", data.tempExt, " °C");
                 break;
 
-            case 9:
+            case 24:
                 afficheur->afficherFloat("Pression ", data.pression, "hPa");
                 break;
 
-            case 11:
+            case 30:
                 afficheur->afficherFloat("Humidite ", data.humidite, " %");
                 break;
 
-            case 13:
+            case 36:
                 afficheur->afficherFloat("Radiation ", data.uSvh, " uSvh");
                 break;
 
-            case 15:
+            case 42:
                 afficheur->afficherFloat("Radiation ", data.cpm, " cpm");
                 break;
-
-            case 16:
-                snprintf(ligneCSV, sizeof (ligneCSV), "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
-                        data.heure,
-                        data.minute,
-                        data.seconde,
-                        data.nbSat,
-                        data.latitude,
-                        data.longitude,
-                        data.altitude,
-                        data.tempInt,
-                        data.tempBME,
-                        data.tempExt,
-                        data.pression,
-                        data.humidite,
-                        data.uSvh,
-                        data.cpm);
-                Serial.println(ligneCSV);
-                carteSD.fputs("/dataBallon.csv", ligneCSV);
+                
+            case 54: case 55: case 56: case 57: case 58: case 59: 
+                afficheur->afficherHeure(gps);
                 break;
+
+        }
+        // toutes les 10 secondes log Data sur carte SD 
+        if (!(data.seconde % 10)) {
+            snprintf(ligneCSV,
+                    sizeof (ligneCSV),
+                    "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
+                    data.heure,
+                    data.minute,
+                    data.seconde,
+                    data.nbSat,
+                    data.latitude,
+                    data.longitude,
+                    data.altitude,
+                    data.tempInt,
+                    data.tempBME,
+                    data.tempExt,
+                    data.pression,
+                    data.humidite,
+                    data.uSvh,
+                    data.cpm);
+            Serial.println(ligneCSV);
+            carteSD.fputs("/dataBallon.csv", ligneCSV);
 
         }
     } else {
