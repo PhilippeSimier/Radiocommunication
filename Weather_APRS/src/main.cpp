@@ -18,6 +18,7 @@ void setup() {
     fx25->setFec(true);  // La trame Ax25 est encapsulée dans une trame Fec
 
 }
+
 void loop() {
 
     char c;
