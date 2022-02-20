@@ -84,10 +84,11 @@ BME280I2C *bme;
 RadiationWatch radiationWatch(32, 33);
 
 Fx25* fx25;
-Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O');   // icon ballon
+Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O'); // icon ballon
 
 int page;
 char ligneCSV[200];
+char commentAPRS[100];
 int year;
 byte month, day, hundredths;
 unsigned long age;
@@ -138,7 +139,7 @@ void setup() {
             NULL); /* Task handle to keep track of created task */
 
     afficheur->afficher("Syn GPS");
-    
+
     // Communication APRS sur FX25
     fx25 = new Fx25();
     char srcCallsign[] = "F4KMN-13";
@@ -146,7 +147,7 @@ void setup() {
     char path1[] = "WIDE1-1";
     char path2[] = "WIDE2-2";
     fx25->begin(srcCallsign, dstCallsign, path1, path2);
-    fx25->setFec(true);  // La trame Ax25 est encapsulée dans une trame Fec
+    fx25->setFec(true); // La trame Ax25 est encapsulée dans une trame Fec
 
 }
 
@@ -212,8 +213,8 @@ void loop() {
             case 42:
                 afficheur->afficherFloat("Radiation ", data.cpm, " cpm");
                 break;
-                
-            case 54: case 55: case 56: case 57: case 58: case 59: 
+
+            case 54: case 55: case 56: case 57: case 58: case 59:
                 afficheur->afficherHeure(gps);
                 break;
 
@@ -241,16 +242,26 @@ void loop() {
             carteSD.fputs("/dataBallon.csv", ligneCSV);
 
         }
-        
+
         // toutes les 2 minutes transmission de la position en APRS 
         if (!(data.minute % 2) && (data.seconde == 0)) {
+
             pos.setLatitude(data.latitude);
             pos.setLongitude(data.longitude);
             pos.setAltitude(data.altitude);
-            Serial.println(pos.getPduAprs(false));
+            snprintf(commentAPRS,
+                    sizeof (commentAPRS),
+                    "T int %.1f T ext %.1f cpm %.1f",
+                    data.tempInt,
+                    data.tempExt,
+                    data.cpm
+                    );
+            pos.setComment(commentAPRS); 
+
+            Serial.println(pos.getPduAprs(false));  // Affichage du PDU aprs position
             fx25->txMessage(pos.getPduAprs(false)); // transmission sans compression
-            
-        
+
+
         }
     } else {
         afficheur->afficher("Syn GPS");
