@@ -8,13 +8,13 @@ techniques de mesures et transmission ainsi qu'une initiation à la démarche de
 Le ballon embarque une nacelle de moins de 1,8 kg qui contient un système de télémesures. L'objectif  est de faire de la science afin de pouvoir mieux comprendre notre atmosphère jusqu’à 30 km d’altitude.
 
 ### La carte de télémesures
-![Carte de télémesures](/images/carte_télémesures.jpg)
+![Carte de télémesures](/projet_ballon/images/carte_télémesures.jpg)
 Un système de stockage des données à bord (sur une carte SD) est présent.
 
 ### Le suivi de la trajectoire de vol 
 Afin de faciliter la récupération de la nacelle, le système de télémesures est équipé d’un récepteur GPS pouvant fonctionner en haute haltitude.
 le suivi du vol est effectué par transmission de trame position APRS encapsulé dans des trames FX25. la position du ballon est visible sur le site aprs.fi
-![aprs.fi](/images/Capture_aprs.fi.png)
+![aprs.fi](/projet_ballon/images/Capture_aprs.fi.png)
 
 
 ## Principe
