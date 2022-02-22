@@ -36,6 +36,7 @@
 #include <BME280I2C.h>          // Capteur Pression humidité température
 #include <RadiationWatch.h>     // Capteur de radiation
 #include <MsdCard.h>            // Carte SD
+#include <Battery.h>            // Batterie tension 
 
 #define SD_CS 5                 //Chip select SD Card
 #define TM_CS 4                 //Chip select Thermocouple
@@ -55,6 +56,7 @@ typedef struct {
     float pression;
     float cpm;
     float uSvh;
+    float uBatt;
 
 } typeData;
 
@@ -76,7 +78,7 @@ LM75A CapteurLM75A(false, false, false, 0); // la valeur de l'offset est déterm
 
 SparkFunMAX31855k thermocouple(TM_CS, 2, 2);
 MsdCard carteSD; // Avec l'affectation des broches standard de la liaison SPI SD_CS 5
-
+Battery batterie(ADC1_CHANNEL_3);  // tension batterie mesurée sur ADC1_CHANNEL_3
 
 BME280I2C *bme;
 RadiationWatch radiationWatch(32, 33);
@@ -103,7 +105,7 @@ void setup() {
         delay(3000);
     }
     carteSD.fwrite("/dataBallon.csv",
-            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm\n");
+            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm,U_batterie\n");
 
     afficheur->afficher("Erreur BME280"); // test du capteur BME280
     BME280I2C::Settings setBme(
@@ -149,6 +151,7 @@ void loop() {
     data.tempExt = thermocouple.readTempC(); // Leture du thermocouple
     data.uSvh = radiationWatch.uSvh(); // Lecture de la dose de radiation
     data.cpm = radiationWatch.cpm(); // lecture du nombre de déclenchement
+    data.uBatt = batterie.getTension(); // lecture de la tension batterie
 
     if (lectureGPS(1000)) {
         led->allumer(VERT); // Vert
@@ -199,6 +202,10 @@ void loop() {
                 afficheur->afficherFloat("Radiation ", data.cpm, " cpm");
                 break;
                 
+            case 48:
+                afficheur->afficherFloat("tension ", data.uBatt, " V");
+                break;    
+                
             case 54: case 55: case 56: case 57: case 58: case 59: 
                 afficheur->afficherHeure(gps);
                 break;
@@ -208,7 +215,7 @@ void loop() {
         if (!(data.seconde % 10)) {
             snprintf(ligneCSV,
                     sizeof (ligneCSV),
-                    "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
+                    "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
                     data.heure,
                     data.minute,
                     data.seconde,
@@ -222,7 +229,8 @@ void loop() {
                     data.pression,
                     data.humidite,
                     data.uSvh,
-                    data.cpm);
+                    data.cpm,
+                    data.uBatt);
             Serial.println(ligneCSV);
             carteSD.fputs("/dataBallon.csv", ligneCSV);
 

@@ -9,6 +9,10 @@
           <in>Afficheur.cpp</in>
           <in>Afficheur.h</in>
         </df>
+        <df name="Battery">
+          <in>Battery.cpp</in>
+          <in>Battery.h</in>
+        </df>
         <df name="DdsI2s">
           <in>DdsI2s.cpp</in>
           <in>DdsI2s.h</in>

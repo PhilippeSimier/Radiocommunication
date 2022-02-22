@@ -38,6 +38,7 @@
 #include <MsdCard.h>            // Carte SD
 #include <Fx25.h>               // Protocole Fx25
 #include <Position.h>           // Trame Position APRS 
+#include <Battery.h>            // Batterie tension 
 
 #define SD_CS 5                 //Chip select SD Card
 #define TM_CS 4                 //Chip select Thermocouple
@@ -82,6 +83,7 @@ MsdCard carteSD; // Avec l'affectation des broches standard de la liaison SPI SD
 
 BME280I2C *bme;
 RadiationWatch radiationWatch(32, 33);
+Battery batterie(ADC1_CHANNEL_3);  // tension batterie mesurée sur ADC1_CHANNEL_3
 
 Fx25* fx25;
 Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O'); // icon ballon
@@ -94,7 +96,7 @@ byte month, day, hundredths;
 unsigned long age;
 
 void setup() {
-
+    
     Serial.begin(115200);
     serialGps.begin(4800, SERIAL_8N1, 16, 17);
     pinMode(34, INPUT); // BP en entrée
@@ -109,7 +111,7 @@ void setup() {
         delay(3000);
     }
     carteSD.fwrite("/dataBallon.csv",
-            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm\n");
+            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm,U_batterie\n");
 
     afficheur->afficher("Erreur BME280"); // test du capteur BME280
     BME280I2C::Settings setBme(
@@ -164,6 +166,7 @@ void loop() {
     data.tempExt = thermocouple.readTempC(); // Leture du thermocouple
     data.uSvh = radiationWatch.uSvh(); // Lecture de la dose de radiation
     data.cpm = radiationWatch.cpm(); // lecture du nombre de déclenchement
+    data.tensionBat = batterie.getTension();
 
     if (lectureGPS(1000)) {
         led->allumer(VERT); // Vert
@@ -213,6 +216,10 @@ void loop() {
             case 42:
                 afficheur->afficherFloat("Radiation ", data.cpm, " cpm");
                 break;
+                
+            case 48:
+                afficheur->afficherFloat("U batt ", data.tensionBat, " V");
+                break;    
 
             case 54: case 55: case 56: case 57: case 58: case 59:
                 afficheur->afficherHeure(gps);
@@ -223,7 +230,7 @@ void loop() {
         if (!(data.seconde % 10)) {
             snprintf(ligneCSV,
                     sizeof (ligneCSV),
-                    "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
+                    "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
                     data.heure,
                     data.minute,
                     data.seconde,
@@ -237,7 +244,8 @@ void loop() {
                     data.pression,
                     data.humidite,
                     data.uSvh,
-                    data.cpm);
+                    data.cpm,
+                    data.tensionBat);
             Serial.println(ligneCSV);
             carteSD.fputs("/dataBallon.csv", ligneCSV);
 
@@ -251,21 +259,22 @@ void loop() {
             pos.setAltitude(data.altitude);
             snprintf(commentAPRS,
                     sizeof (commentAPRS),
-                    "T int %.1f T ext %.1f cpm %.1f",
+                    "T_int %.1f T_ext %.1f cpm %.1f U_bat %.1f",
                     data.tempInt,
                     data.tempExt,
-                    data.cpm
+                    data.cpm,
+                    data.tensionBat
                     );
             pos.setComment(commentAPRS); 
 
-            Serial.println(pos.getPduAprs(false));  // Affichage du PDU aprs position
+            Serial.println(pos.getPduAprs(false));  // Affichage dans la console du PDU aprs position
             fx25->txMessage(pos.getPduAprs(false)); // transmission sans compression
 
 
         }
     } else {
         afficheur->afficher("Syn GPS");
-        led->allumer(RgbColor(8, 0, 0)); // Rouge 
+        led->allumer(ROUGE); // Rouge 
 
     }
 
