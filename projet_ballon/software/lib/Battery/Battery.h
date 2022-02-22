@@ -9,6 +9,7 @@
 #define BATTERY_H
 
 #include <driver/adc.h>
+#include <Arduino.h>
 
 class Battery {
     

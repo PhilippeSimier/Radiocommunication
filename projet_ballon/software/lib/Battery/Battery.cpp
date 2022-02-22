@@ -4,7 +4,7 @@
  * 
  * Created on 22 février 2022, 10:42
  */
-#include <Arduino.h>
+
 #include "Battery.h"
 
 Battery::Battery(adc1_channel_t _channel) :
