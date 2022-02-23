@@ -218,7 +218,7 @@ void loop() {
                 break;
                 
             case 48:
-                afficheur->afficherFloat("U batt ", data.tensionBat, " V");
+                afficheur->afficherFloat("Batterie ", data.tensionBat, " V");
                 break;    
 
             case 54: case 55: case 56: case 57: case 58: case 59:
