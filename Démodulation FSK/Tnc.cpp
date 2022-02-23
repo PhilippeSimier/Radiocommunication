@@ -69,6 +69,7 @@ void IRAM_ATTR Tnc::interruption()
     // perfectly matched, etc.
     
     rawadc = adc1_get_raw(PIN_ADC);    
+    rawadc>>=1;
     bias_sum += rawadc ;
     if ( ++bias_cnt == 128 )
     {
