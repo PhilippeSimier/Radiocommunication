@@ -83,7 +83,7 @@ MsdCard carteSD; // Avec l'affectation des broches standard de la liaison SPI SD
 
 BME280I2C *bme;
 RadiationWatch radiationWatch(32, 33);
-Battery batterie(ADC1_CHANNEL_3);  // tension batterie mesurée sur ADC1_CHANNEL_3
+Battery batterie(ADC1_CHANNEL_3, 2305, 93);  // tension batterie mesurée sur ADC1_CHANNEL_3
 
 Fx25* fx25;
 Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O'); // icon ballon
@@ -94,6 +94,7 @@ char commentAPRS[100];
 int year;
 byte month, day, hundredths;
 unsigned long age;
+float offsetThermo = 1.0;
 
 void setup() {
     
@@ -128,7 +129,7 @@ void setup() {
     while (!bme->begin()) {
         delay(1000);
     }
-
+    
     radiationWatch.setup();
     radiationWatch.registerRadiationCallback(&onRadiation);
     radiationWatch.registerNoiseCallback(&onNoise);
@@ -163,7 +164,7 @@ void loop() {
             BME280::PresUnit_hPa);
 
     data.tempInt = CapteurLM75A.getTemperature(); // Lecture du capteur LM75A
-    data.tempExt = thermocouple.readTempC(); // Leture du thermocouple
+    data.tempExt = thermocouple.readTempC() + offsetThermo; // Leture du thermocouple
     data.uSvh = radiationWatch.uSvh(); // Lecture de la dose de radiation
     data.cpm = radiationWatch.cpm(); // lecture du nombre de déclenchement
     data.tensionBat = batterie.getTension();
@@ -259,7 +260,7 @@ void loop() {
             pos.setAltitude(data.altitude);
             snprintf(commentAPRS,
                     sizeof (commentAPRS),
-                    "T_int %.1f T_ext %.1f cpm %.1f U_bat %.1f",
+                    "Ti %.1f Te %.1f cpm %.1f U %.1f",
                     data.tempInt,
                     data.tempExt,
                     data.cpm,
