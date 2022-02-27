@@ -184,6 +184,7 @@ void loop() {
         // Lecture de la position
         gps.f_get_position(&data.latitude, &data.longitude, &age);
         data.altitude = gps.f_altitude();
+        
 
         switch (data.seconde) {
             case 0: case 1: case 2: case 3: case 4: case 5:
@@ -247,7 +248,7 @@ void loop() {
                     data.uSvh,
                     data.cpm,
                     data.tensionBat);
-            Serial.println(ligneCSV);
+            //Serial.println(ligneCSV);
             carteSD.fputs("/dataBallon.csv", ligneCSV);
 
         }
@@ -255,7 +256,7 @@ void loop() {
         // toutes les 2 minutes transmission de la position en APRS 
         if (!(data.minute % 2) && (data.seconde == 0)) {
 
-            pos.setLatitude(data.latitude);
+            pos.setLatitude(data.latitude);           
             pos.setLongitude(data.longitude);
             pos.setAltitude(data.altitude);
             snprintf(commentAPRS,
@@ -268,9 +269,8 @@ void loop() {
                     );
             pos.setComment(commentAPRS); 
 
+            fx25->txMessage(pos.getPduAprs(false)); // transmission avec compression
             Serial.println(pos.getPduAprs(false));  // Affichage dans la console du PDU aprs position
-            fx25->txMessage(pos.getPduAprs(false)); // transmission sans compression
-
 
         }
     } else {

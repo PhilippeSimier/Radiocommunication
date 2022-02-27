@@ -104,7 +104,7 @@ void DdsI2s::sendBit() {
         bufferOut[m ^ 1] = sinus ; //so swapp even and odd sample
     }
     i2s_write(I2S_NUM_0, (char*) bufferOut, NUM_SAMPLES * sizeof (uint16_t), &bytesWrite, portMAX_DELAY); //load dma for dac
-    digitalWrite(syncLed, digitalRead(syncLed) ^ 1);
+    //digitalWrite(syncLed, digitalRead(syncLed) ^ 1);
 }
 
 void DdsI2s::flipOut() {

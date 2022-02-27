@@ -143,9 +143,7 @@ void MsdCard::fputs(const char* path, const char* message){
         Serial.println("Failed to open file for appending");
         return;
     }
-    if (file.print(message)) {
-        Serial.println("Message appended");
-    } else {
+    if (!file.print(message)) {
         Serial.println("Append failed");
     }
     file.close();

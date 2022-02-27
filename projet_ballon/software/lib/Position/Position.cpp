@@ -7,7 +7,15 @@
 
 #include "Position.h"
 
-Position::Position(const double _latitude, const double _longitude, String _comment, const char _symboleTable, const char _symbole) :
+/**
+ * 
+ * @param _latitude
+ * @param _longitude      double longitude 
+ * @param _comment        String le commentaire
+ * @param _symboleTable   char pour désigner la table des symboles
+ * @param _symbole        char pour désigner un symbole dans la table 
+ */
+Position::Position(const float _latitude, const float _longitude, String _comment, const char _symboleTable, const char _symbole) :
 latitude(_latitude),
 longitude(_longitude),         
 symboleTable(_symboleTable),
@@ -23,11 +31,11 @@ Position::Position(const Position& orig) {
 Position::~Position() {
 }
 
-void Position::setLatitude(const double _latitude) {
+void Position::setLatitude(const float _latitude) {
     latitude = _latitude;
 }
 
-void Position::setLongitude(const double _longitude) {
+void Position::setLongitude(const float _longitude) {
     longitude = _longitude;
 }
 
@@ -35,7 +43,7 @@ void Position::setComment(String _comment) {
     comment = _comment;
 }
 
-void Position::setAltitude(const double _alt) {
+void Position::setAltitude(const float _alt) {
     alt = (int)(3.2809 * _alt);
 }
 /**
@@ -79,16 +87,18 @@ void Position::latitude_to_str() {
     int ideg; // whole number of degrees
     double dmin; // Minutes after removing degrees
     char smin[8]; // Decimal Minutes in format mm.mm 
+    float latAbs = 0.0;
 
-    if (latitude < 0) {
-        latitude = (-latitude);
+    if (latitude < 0.0) {
+        latAbs = (-latitude);
         hemi = 'S';
     } else {
+        latAbs = latitude;
         hemi = 'N';
     }
 
-    ideg = (int) latitude;
-    dmin = (latitude - ideg) * 60.;
+    ideg = (int) latAbs;
+    dmin = (latAbs - ideg) * 60.;
 
     snprintf(smin, sizeof (smin), "%05.2f", dmin);
     /* Due to roundoff, 59.99 could come out as "60.00" */
@@ -105,16 +115,18 @@ void Position::longitude_to_str() {
     int ideg; // whole number of degrees. 
     double dmin; // Minutes after removing degrees. */
     char smin[8]; // Minutes in format mmm.mm */
+    float longAbs = 0.0;
 
-    if (longitude < 0) {
-        longitude = (-longitude);
+    if (longitude < 0.0) {
+        longAbs = (-longitude);
         hemi = 'W';
     } else {
+        longAbs = longitude;
         hemi = 'E';
     }
 
-    ideg = (int) longitude;
-    dmin = (longitude - ideg) * 60.;
+    ideg = (int) longAbs;
+    dmin = (longAbs - ideg) * 60.;
 
     snprintf(smin, sizeof (smin), "%05.2f", dmin);
     /* Due to roundoff, 59.9999 could come out as "60.00" */
