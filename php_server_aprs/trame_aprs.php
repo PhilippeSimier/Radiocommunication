@@ -7,19 +7,7 @@
  http://www.aprs-is.net/javAPRSFilter.aspx  
  * 
  exemple d'affichage dans la console
- # aprsc 2.1.10-gd72a17c
 
- # logresp F4KMN-2 verified, server T2SWEDEN
-
- F4GOH-5>APDR16,TCPIP*,qAC,T2POLC:=4753.43N/00016.61E$/A=000453 https://aprsdroid.org/
-
- # aprsc 2.1.10-gd72a17c 14 Feb 2022 14:48:30 GMT T2SWEDEN 95.216.197.75:14580
-
- # aprsc 2.1.10-gd72a17c 14 Feb 2022 14:48:50 GMT T2SWEDEN 95.216.197.75:14580
-
- # aprsc 2.1.10-gd72a17c 14 Feb 2022 14:49:10 GMT T2SWEDEN 95.216.197.75:14580
- 
- # aprsc 2.1.10-gd72a17c 14 Feb 2022 14:49:30 GMT T2SWEDEN 95.216.197.75:14580
 
  */
 
@@ -47,7 +35,9 @@ function receptionPositionMobile($callMobile) {
     echo "address IP du serveur euro.aprs2.net => " . $address.$crlf;
     $succes = true;
 
-    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP); //Ouvre un socket en IPV4, TCP 
+    socket_set_option($socket,SOL_SOCKET, SO_RCVTIMEO, array("sec"=>1, "usec"=>0));        // time out 1s pour socket_read
+
     if ($socket === false) {
         echo "socket_create() a échoué : raison :  " . socket_strerror(socket_last_error()).$crlf;
         $succes = false;
@@ -75,28 +65,25 @@ function receptionPositionMobile($callMobile) {
                 echo "Pour quitter tapez q puis entrée " . $crlf;
 
                 $clavier = "";
-                while ($clavier !== "q") {
+               do {
                     
-                    if (false === ($pduAPRS = socket_read($socket, 2048, PHP_NORMAL_READ))) {
-                        echo "socket_read() failed: reason: " . socket_strerror(socket_last_error($msgsock)) . "\n";
-                    } else {
-                        
+                    if ($pduAPRS = socket_read($socket, 256, PHP_BINARY_READ )) {                      
                         if (substr($pduAPRS, 0,strlen($callMobile)) == $callMobile){
                             
-                            echo $pduAPRS.$crlf;   // affichage de la trame brute                     
-                            echo date('d-m-y H:i:s') . "\t";
+                            echo $pduAPRS;                        // affichage de la trame brute                     
+                            echo date('d-m-y H:i:s') . "\t";      // affichage date et heure
                             $position = parsePosition($pduAPRS);
                             echo ("Latitude  : ". $position[0] . "\t");
                             echo ("longitude : ". $position[1] . "\r\n\r\n");
                         }                    
                     }
-                    $clavier = lireClavier();  // appel de la fonction non bloquante
-                    
+                    $clavier = lireClavier();  // appel de la fonction non bloquante                  
                 }
+                while ($clavier !== "q");
                 
             
                socket_close($socket);
-               echo "Socket fermée...".$crlf;
+               echo "Socket fermée...Bye".$crlf;
             }
         }
     }
