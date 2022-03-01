@@ -25,6 +25,7 @@
 
 function receptionPositionMobile($callMobile) {
     $crlf="\r\n";
+    date_default_timezone_set('Europe/Paris');
 
     echo "Connexion TCP/IP sur serveur APRS".$crlf;    
 
@@ -43,7 +44,7 @@ function receptionPositionMobile($callMobile) {
  
     // adresse IP du serveur APRS
     $address = gethostbyname('euro.aprs2.net');
-    echo "addresse IP du serveur " . $address.$crlf;
+    echo "address IP du serveur euro.aprs2.net => " . $address.$crlf;
     $succes = true;
 
     $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -56,40 +57,47 @@ function receptionPositionMobile($callMobile) {
             echo "socket_connect() a échoué : raison : ($result) " . socket_strerror(socket_last_error($socket)).$crlf;
             $succes = false;
         } else {
-            echo "Envoi de la commande login/mdp : " . $loginMdp.$crlf;
+            echo "Envoi de la commande login/mdp : ".$crlf;
             $retour = socket_write($socket, $loginMdp, strlen($loginMdp));
             if ($retour === false) {
-                echo "erreur".$crlf;
+                echo "erreur login mdp".$crlf;
                 $succes = false;
             }
             echo "Envoi de la commande station Info : " . $stationInfo.$crlf;
             $retour = socket_write($socket, $stationInfo, strlen($stationInfo));
             if ($retour === false) {
-                echo "erreur".$crlf;
+                echo "erreur station info".$crlf;
                 $succes = false;
             }
-            echo "Attente de reception de la position du mobile " . $crlf;                       
-            
-            while (true) {
-                if (false === ($buf = socket_read($socket, 2048, PHP_NORMAL_READ))) {
-                    echo "socket_read() failed: reason: " . socket_strerror(socket_last_error($msgsock)) . "\n";
-                } else {
-                    
-                    if (substr($buf, 0,strlen($callMobile))==$callMobile){
-                        echo $buf.$crlf;
-                        $pos = strpos($buf, ":");
-                        // Set the new timezone
-                        date_default_timezone_set('Europe/Paris');
-                        $date = date('d-m-y H:i:s');
-                        echo $date . "\t";
+            if ($succes){
 
-                        parsePosition(substr($buf, $pos+2,18));
-                    }                    
+                echo "Attente de reception de la position du mobile " . $callMobile . $crlf;                       
+                echo "Pour quitter tapez q puis entrée " . $crlf;
+
+                $clavier = "";
+                while ($clavier !== "q") {
+                    
+                    if (false === ($pduAPRS = socket_read($socket, 2048, PHP_NORMAL_READ))) {
+                        echo "socket_read() failed: reason: " . socket_strerror(socket_last_error($msgsock)) . "\n";
+                    } else {
+                        
+                        if (substr($pduAPRS, 0,strlen($callMobile)) == $callMobile){
+                            
+                            echo $pduAPRS.$crlf;   // affichage de la trame brute                     
+                            echo date('d-m-y H:i:s') . "\t";
+                            $position = parsePosition($pduAPRS);
+                            echo ("Latitude  : ". $position[0] . "\t");
+                            echo ("longitude : ". $position[1] . "\r\n\r\n");
+                        }                    
+                    }
+                    $clavier = lireClavier();  // appel de la fonction non bloquante
+                    
                 }
-            }
+                
             
-            echo "Fermeture du socket...".$crlf;
-            socket_close($socket);
+               socket_close($socket);
+               echo "Socket fermée...".$crlf;
+            }
         }
     }
     return $succes;
@@ -98,8 +106,27 @@ function receptionPositionMobile($callMobile) {
 
 function parsePosition($trame)
 {
-$position=explode("/", $trame);
-// print_r($position);
-echo ("Latitude  : ". $position[0] . "\t");
-echo ("longitude : ". $position[1] . "\r\n\r\n");
+    $pos = strpos($trame, ":"); 
+    $temp = substr($trame, $pos+2,18);
+    $position = explode("/", $temp);
+    return $position;
+
 }
+
+
+// Fonction non bloquante) pour lire un caractère au clavier (stream STDIN)
+
+function lireClavier() {
+
+        $read = array(STDIN);
+        $write = NULL;
+        $except = NULL;
+
+        if (false === ($nb = stream_select($read, $write, $except, 0))) {
+            print("\$ 001 Socket Error : UNABLE TO WATCH STDIN.\n");
+            return FALSE;
+        } elseif ($nb > 0) {
+                return fread(STDIN,1);
+        }
+           
+    }
