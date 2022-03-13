@@ -83,7 +83,7 @@ MsdCard carteSD; // Avec l'affectation des broches standard de la liaison SPI SD
 
 BME280I2C *bme;
 RadiationWatch radiationWatch(32, 33);
-Battery batterie(ADC1_CHANNEL_3, 2305, 93);  // tension batterie mesurée sur ADC1_CHANNEL_3
+Battery batterie(ADC1_CHANNEL_3, 3050, 93);  // tension batterie mesurée sur ADC1_CHANNEL_3
 
 Fx25* fx25;
 Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O'); // icon ballon

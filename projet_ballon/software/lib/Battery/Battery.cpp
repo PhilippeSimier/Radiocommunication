@@ -27,7 +27,8 @@ Battery::~Battery() {
 float Battery::getTension(){
     
     int value = adc1_get_raw(channel);
-    value = map(value, v1, v10, 100, 1000);   // pont diviseur  12K + 3.3K
+    //Serial.println(value);
+    value = map(value, v1, v10, 100, 1262);   // pont diviseur  12K + 3.3K
     return (float) value/100;
 }
 
