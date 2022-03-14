@@ -1,29 +1,37 @@
 /* 
  * File:   Battery.h
- * Author: philippe SIMIER Touchard Washington (Le Mans)
+ * Author: philippe
  *
- * Created on 22 février 2022, 10:41
+ * Created on 12 mars 2022, 16:53
  */
 
 #ifndef BATTERY_H
 #define BATTERY_H
 
-#include <driver/adc.h>
-#include <Arduino.h>
+#include <Wire.h>
 
-class Battery {
-    
+#include <Adafruit_INA219.h>
+
+
+class Battery : public Adafruit_INA219
+{
 public:
+    Battery(const float _capacite);
+    Battery(const Battery& orig);
     
-    Battery(adc1_channel_t _channel = ADC1_CHANNEL_3, int _v10 = 2305, int _v1 = 93);   // Entrée analogique tension batterie gpio 39 sur la carte ballon
-    virtual ~Battery();
-    float getTension();
+    void  init(const float _charge);
+    float getCharge();
+    float getSOC();
     
 private:
+    unsigned long t0;
+    unsigned long t1;
+    float i0;
+    float i1;
+    float charge;
+    float capacite;
     
-    adc1_channel_t channel;   // Le canal utilisé pour l'entrée analogique
-    int v10;                 // la valeur lu pour une tension de 10 V 
-    int v1;                  // la valeur lu pour une tension de 1 V
+
 };
 
 #endif /* BATTERY_H */

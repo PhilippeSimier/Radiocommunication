@@ -22,6 +22,9 @@
  * Bibliothèque : RadiationWatch @ 0.6.4 
  * installation : pio lib -g install 1523
  * 
+ * Bibliothèque :  INA219 Current Sensor
+ * installation :  pio lib -g install 160
+ * 
  */
 
 #include <Arduino.h>
@@ -30,7 +33,8 @@
 #include <HardwareSerial.h>
 
 #include <Afficheur.h>          // Afficheur SSD1306
-#include <Led.h>                // Led RGB    
+#include <Led.h>                // Led RGB  
+#include <Battery.h>            // Battery 
 #include <LM75A.h>              // LM75A température intérieure
 #include <SparkFunMAX31855k.h>  // Température thermocouple extérieure
 #include <BME280I2C.h>          // Capteur Pression humidité température
@@ -59,6 +63,10 @@ typedef struct {
     float cpm;
     float uSvh;
     float tensionBat;
+    float courentBat;
+    float SOCBat;
+    float chargeBat;
+    
 } typeData;
 
 typeData data;
@@ -75,6 +83,8 @@ HardwareSerial serialGps(1); // GPS sur hardware serial 1
 
 Afficheur *afficheur;
 Led *led;
+Battery *laBatterie; 
+
 LM75A CapteurLM75A(false, false, false, 0); // la valeur de l'offset est déterminée par la calibration
 
 SparkFunMAX31855k thermocouple(TM_CS, 2, 2);
@@ -83,7 +93,7 @@ MsdCard carteSD; // Avec l'affectation des broches standard de la liaison SPI SD
 
 BME280I2C *bme;
 RadiationWatch radiationWatch(32, 33);
-Battery batterie(ADC1_CHANNEL_3, 3050, 93);  // tension batterie mesurée sur ADC1_CHANNEL_3
+
 
 Fx25* fx25;
 Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O'); // icon ballon
@@ -99,13 +109,18 @@ float offsetThermo = 1.0;
 void setup() {
     
     Serial.begin(115200);
-    serialGps.begin(4800, SERIAL_8N1, 16, 17);
+    serialGps.begin(4800, SERIAL_8N1, 16, 17); // première carte 16 17)
     pinMode(34, INPUT); // BP en entrée
     digitalWrite(2, LOW); // extinction des led sur GPIO2
 
     led = new Led;
     led->allumer(ROUGE); // rouge
     afficheur = new Afficheur;
+    
+    afficheur->afficher("Erreur CarteINA"); // test de la carte SD
+    laBatterie = new Battery(3000); //  instanciation d'une batterie de 120 mAh
+    laBatterie->init(3000);         //  déclaration de la charge initiale 
+    laBatterie->setCalibration_16V_400mA();   
 
     afficheur->afficher("Erreur CarteSD"); // test de la carte SD
     while (!carteSD.begin()) {
@@ -113,7 +128,7 @@ void setup() {
     }
     carteSD.fwrite("/dataBallon.csv",
             "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm,U_batterie\n");
-
+    
     afficheur->afficher("Erreur BME280"); // test du capteur BME280
     BME280I2C::Settings setBme(
             BME280::OSR_X1,
@@ -167,7 +182,9 @@ void loop() {
     data.tempExt = thermocouple.readTempC() + offsetThermo; // Leture du thermocouple
     data.uSvh = radiationWatch.uSvh(); // Lecture de la dose de radiation
     data.cpm = radiationWatch.cpm(); // lecture du nombre de déclenchement
-    data.tensionBat = batterie.getTension();
+    data.tensionBat = laBatterie->getBusVoltage_V();
+    data.courentBat = laBatterie->getCurrent_mA();
+    data.SOCBat = laBatterie->getSOC();
 
     if (lectureGPS(1000)) {
         led->allumer(VERT); // Vert
@@ -195,33 +212,43 @@ void loop() {
                 afficheur->afficherPosition(gps);
                 break;
 
-            case 12:
+            case 10:
                 afficheur->afficherFloat("Temp int ", data.tempInt, " °C");
                 break;
 
-            case 18:
+            case 15:
                 afficheur->afficherFloat("Temp ext ", data.tempExt, " °C");
                 break;
 
-            case 24:
+            case 20:
                 afficheur->afficherFloat("Pression ", data.pression, "hPa");
                 break;
 
-            case 30:
+            case 25:
                 afficheur->afficherFloat("Humidite ", data.humidite, " %");
                 break;
 
-            case 36:
+            case 30:
                 afficheur->afficherFloat("Radiation ", data.uSvh, " uSvh");
                 break;
 
-            case 42:
+            case 35:
                 afficheur->afficherFloat("Radiation ", data.cpm, " cpm");
                 break;
                 
-            case 48:
+            case 40:
                 afficheur->afficherFloat("Batterie ", data.tensionBat, " V");
-                break;    
+                break; 
+                
+            case 45:
+                afficheur->afficherFloat("SOC ", data.SOCBat, " %");
+                break;  
+                
+            case 50:
+                afficheur->afficherFloat("Courant ", data.courentBat, " mA");
+                Serial.print("Courant : ");
+                Serial.println(data.courentBat);
+                break;     
 
             case 54: case 55: case 56: case 57: case 58: case 59:
                 afficheur->afficherHeure(gps);
@@ -261,11 +288,14 @@ void loop() {
             pos.setAltitude(data.altitude);
             snprintf(commentAPRS,
                     sizeof (commentAPRS),
-                    "Ti %.1f Te %.1f cpm %.1f U %.1f",
+                    "%.0f %.0f %.0f %.1f %.0f %+.1f",
                     data.tempInt,
                     data.tempExt,
                     data.cpm,
-                    data.tensionBat
+                    data.tensionBat,
+                    data.SOCBat,
+                    data.courentBat
+                    
                     );
             pos.setComment(commentAPRS); 
 

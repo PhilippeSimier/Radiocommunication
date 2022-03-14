@@ -1,34 +1,61 @@
 /* 
  * File:   Battery.cpp
- * Author: philippe SIMIER Touchard Washington (Le Mans)
+ * Author: philippe Simier Touchard Washington le Mans
  * 
- * Created on 22 février 2022, 10:42
+ * Created on 12 mars 2022, 16:53
  */
 
 #include "Battery.h"
 
-Battery::Battery(adc1_channel_t _channel, int _v10, int _v1) :
-channel(_channel),
-v10(_v10),
-v1(_v1)        
+Battery::Battery(const float _capacite) :
+    Adafruit_INA219(),
+    t0(0),
+    t1(0),
+    i0(0),
+    i1(0),
+    charge(0),
+    capacite(_capacite)    
 {
-
-    adc1_config_width(ADC_WIDTH_BIT_12);   // de 12 bits de 0 à 4096
-    adc1_config_channel_atten(_channel, ADC_ATTEN_DB_11);  // de 0 à 3V
 }
 
-Battery::~Battery() {
+Battery::Battery(const Battery& orig) {
+}
+
+
+
+void Battery::init(const float _charge){
+    
+    Serial.println("Recherche de la puce INA219 !");
+    while (!begin()) {
+        delay(3000);
+    }
+    Serial.println("Puce INA219 trouvée");
+    charge = _charge;
+    
 }
 
 /**
- * @brief  Méthode pour obtenir la tension de la batterie
- * @return float la tension en V de la batterie
+ * @brief  calcul de la charge mAh (methode des trapèzes)
+ * @return float la charge de la batterie
  */
-float Battery::getTension(){
+float Battery::getCharge(){
     
-    int value = adc1_get_raw(channel);
-    //Serial.println(value);
-    value = map(value, v1, v10, 100, 1262);   // pont diviseur  12K + 3.3K
-    return (float) value/100;
+    t1 = millis();
+    i1 = getCurrent_mA();
+    charge += (i1 + i0) * (t1 - t0) / 7200000;
+    t0 = t1;
+    i0 = i1;
+    
+    // la charge ne peut pas être négative
+    if (charge < 0.0) charge = 0.0;
+    // la charge ne peut pas être supérieur à la capacité
+    if (charge > capacite) charge = capacite;
+    
+    return charge; 
 }
 
+float Battery::getSOC(){
+    
+    getCharge();
+    return 100 * charge/capacite;
+}

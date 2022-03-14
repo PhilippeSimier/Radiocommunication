@@ -78,9 +78,9 @@ void Afficheur::afficherPosition(TinyGPS &gps) {
  */
 void Afficheur::afficherFloat(String message, float valeur, String unite) {
 
-    char sz[16] = "******";
-    snprintf(sz, sizeof(sz), "%.1f", valeur);
-    String valst(sz);
+    //char sz[16] = "******";
+    //snprintf(sz, sizeof(sz), "%.1f", valeur);
+    String valst(valeur,1);
     afficher(message + valst + unite);
 
 }
