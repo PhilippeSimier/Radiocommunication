@@ -28,6 +28,7 @@
  */
 
 #include <Arduino.h>
+#include <Preferences.h>
 
 #include <TinyGPS.h>   // GPS
 #include <HardwareSerial.h>
@@ -97,6 +98,7 @@ RadiationWatch radiationWatch(32, 33);
 
 Fx25* fx25;
 Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O'); // icon ballon
+Preferences preferences;
 
 int page;
 char ligneCSV[200];
@@ -117,9 +119,11 @@ void setup() {
     led->allumer(ROUGE); // rouge
     afficheur = new Afficheur;
     
-    afficheur->afficher("Erreur CarteINA"); // test de la carte SD
-    laBatterie = new Battery(3000); //  instanciation d'une batterie de 120 mAh
-    laBatterie->init(3000);         //  déclaration de la charge initiale 
+    afficheur->afficher("Erreur CarteINA"); // test de la carte battery
+    preferences.begin("battery", false); 
+    data.chargeBat = preferences.getFloat("charge", 3000.0);
+    laBatterie = new Battery(3000); //  instanciation d'une batterie de capacité 3000 mAh
+    laBatterie->init(data.chargeBat);         //  déclaration de la charge initiale 
     laBatterie->setCalibration_32V_1A(); 
 
     afficheur->afficher("Erreur CarteSD"); // test de la carte SD
@@ -184,7 +188,8 @@ void loop() {
     data.cpm = radiationWatch.cpm(); // lecture du nombre de déclenchement
     data.tensionBat = laBatterie->getBusVoltage_V();
     data.courentBat = laBatterie->getCurrent_mA();
-    data.SOCBat = laBatterie->getSOC();
+    data.chargeBat  = laBatterie->getCharge();
+    data.SOCBat     = laBatterie->getSOC();
 
     if (lectureGPS(1000)) {
         led->allumer(VERT); // Vert
@@ -221,7 +226,7 @@ void loop() {
                 break;
 
             case 20:
-                afficheur->afficherFloat("Pression ", data.pression, "hPa");
+                afficheur->afficherFloat("Pression ", data.pression, " hPa", 0);
                 break;
 
             case 25:
@@ -295,13 +300,12 @@ void loop() {
                     data.tensionBat,
                     data.SOCBat,
                     data.courentBat
-                    
                     );
             pos.setComment(commentAPRS); 
 
             fx25->txMessage(pos.getPduAprs(false)); // transmission avec compression
             Serial.println(pos.getPduAprs(false));  // Affichage dans la console du PDU aprs position
-
+            preferences.putFloat("charge", data.chargeBat); // sauvegarde de la charge batterie
         }
     } else {
         afficheur->afficher("Syn GPS");

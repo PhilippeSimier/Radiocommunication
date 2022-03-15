@@ -56,6 +56,5 @@ float Battery::getCharge(){
 
 float Battery::getSOC(){
     
-    getCharge();
     return 100 * charge/capacite;
 }
