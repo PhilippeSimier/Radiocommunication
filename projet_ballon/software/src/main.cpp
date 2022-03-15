@@ -120,7 +120,7 @@ void setup() {
     afficheur->afficher("Erreur CarteINA"); // test de la carte SD
     laBatterie = new Battery(3000); //  instanciation d'une batterie de 120 mAh
     laBatterie->init(3000);         //  déclaration de la charge initiale 
-    laBatterie->setCalibration_16V_400mA();   
+    laBatterie->setCalibration_32V_1A(); 
 
     afficheur->afficher("Erreur CarteSD"); // test de la carte SD
     while (!carteSD.begin()) {
@@ -237,7 +237,7 @@ void loop() {
                 break;
                 
             case 40:
-                afficheur->afficherFloat("Batterie ", data.tensionBat, " V");
+                afficheur->afficherFloat("Batterie ", data.tensionBat, " V", 2);
                 break; 
                 
             case 45:
