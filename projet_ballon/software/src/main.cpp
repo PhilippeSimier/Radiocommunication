@@ -234,7 +234,7 @@ void loop() {
                 break;
 
             case 30:
-                afficheur->afficherFloat("Radiation ", data.uSvh, " uSvh");
+                afficheur->afficherFloat("Radiation ", data.uSvh, " uSvh", 2);
                 break;
 
             case 35:
@@ -251,8 +251,6 @@ void loop() {
                 
             case 50:
                 afficheur->afficherFloat("Courant ", data.courentBat, " mA");
-                Serial.print("Courant : ");
-                Serial.println(data.courentBat);
                 break;     
 
             case 54: case 55: case 56: case 57: case 58: case 59:

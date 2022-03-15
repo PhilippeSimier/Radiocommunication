@@ -53,8 +53,8 @@ void Position::setAltitude(const float _alt) {
  * @return char* Le pdu APRS position 
  */
 char* Position::getPduAprs(bool compressed) {
-    char com[43];
-    char scom[33];
+    char com[44];
+    char scom[34];
     char salt[10];
     
     if (alt != 0){
@@ -76,7 +76,6 @@ char* Position::getPduAprs(bool compressed) {
 
         latitude_to_str();
         longitude_to_str();
-
         snprintf(pdu, sizeof (pdu), "!%s%c%s%c%s", slat, symboleTable, slong, symbole, com);
     }
     return pdu;
