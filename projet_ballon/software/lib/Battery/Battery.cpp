@@ -16,6 +16,8 @@ Battery::Battery(const float _capacite) :
     charge(0),
     capacite(_capacite)    
 {
+    pinMode(13, OUTPUT);     // GPIO 13 en sortie
+    digitalWrite(13, HIGH);  // Fermeture du Mosfet
 }
 
 Battery::Battery(const Battery& orig) {
@@ -50,6 +52,13 @@ float Battery::getCharge(){
     if (charge < 0.0) charge = 0.0;
     // la charge ne peut pas être supérieur à la capacité
     if (charge > capacite) charge = capacite;
+    // la charge est terminé si 12.6 V 
+    if (getBusVoltage_V() > 12.6){
+       digitalWrite(13, LOW);  // Ouverture du Mosfet 
+    }
+    if (getBusVoltage_V() < 12.3){
+       digitalWrite(13, HIGH);  // Fermeture du Mosfet 
+    }
     
     return charge; 
 }

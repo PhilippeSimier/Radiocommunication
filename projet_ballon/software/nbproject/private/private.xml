@@ -9,6 +9,7 @@
         <group>
             <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Afficheur/Afficheur.h</file>
             <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/platformio.ini</file>
+            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Position/Position.h</file>
             <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Battery/Battery.h</file>
             <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/src/main.cpp</file>
             <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Position/Position.cpp</file>

@@ -114,7 +114,9 @@ void setup() {
     serialGps.begin(4800, SERIAL_8N1, 16, 17); // première carte 16 17)
     pinMode(34, INPUT); // BP en entrée
     digitalWrite(2, LOW); // extinction des led sur GPIO2
-
+    
+    
+    
     led = new Led;
     led->allumer(ROUGE); // rouge
     afficheur = new Afficheur;
