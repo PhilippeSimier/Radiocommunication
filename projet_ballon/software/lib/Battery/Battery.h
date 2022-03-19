@@ -9,8 +9,8 @@
 #define BATTERY_H
 
 #include <Wire.h>
-
 #include <Adafruit_INA219.h>
+#include <Preferences.h>
 
 
 class Battery : public Adafruit_INA219
@@ -19,9 +19,10 @@ public:
     Battery(const float _capacite);
     Battery(const Battery& orig);
     
-    void  init(const float _charge);
-    float getCharge();
+    bool  init();
+    float getCharge(float temp);
     float getSOC();
+    void  memoriserCharge();
     
 private:
     unsigned long t0;
@@ -30,6 +31,7 @@ private:
     float i1;
     float charge;
     float capacite;
+    Preferences preferences;
     
 
 };

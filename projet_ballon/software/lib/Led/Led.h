@@ -17,14 +17,14 @@
 #define PIN_RGB     15    // carte Ballon sonde APRS
 #define NUMPIXELS   1
 
-#define ROUGE   RgbColor(8,0,0)
-#define RED 	RgbColor(8,0,0)
+#define ROUGE   RgbColor(2,0,0)
+#define RED 	RgbColor(2,0,0)
 
-#define BLEU    RgbColor(0,0,8)
-#define BLUE    RgbColor(0,0,8)
+#define BLEU    RgbColor(0,0,2)
+#define BLUE    RgbColor(0,0,2)
 
-#define VERT    RgbColor(0,8,0)
-#define GREEN   RgbColor(0,8,0)
+#define VERT    RgbColor(0,2,0)
+#define GREEN   RgbColor(0,2,0)
 
 class Led : public NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0800KbpsMethod> // Spécialisation de NeoPixelBus 
 {

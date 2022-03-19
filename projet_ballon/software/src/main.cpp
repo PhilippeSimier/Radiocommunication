@@ -1,14 +1,14 @@
 /* 
- * File:   main.cpp
+ * File:   main.cpp Programme pour le ballon stratosphérique
  * Author: philippe SIMIER Touchard Washington Le Mans
  *
  * Created on 9 février 2022, 17:11
  * 
- * Bibliothèque TinyGPS 
- * installation :  pio lib -g install 416
+ * Bibliothèque : TinyGPS 
+ * installation : pio lib -g install 416
  * 
- * Bibliothèque :  NeoPixelBus @ 2.6.9
- * installation :  pio lib -g install 547
+ * Bibliothèque : NeoPixelBus @ 2.6.9
+ * installation : pio lib -g install 547
  * 
  * Bibliothèque : Oled 
  * installation : pio lib -g install 2978
@@ -22,13 +22,12 @@
  * Bibliothèque : RadiationWatch @ 0.6.4 
  * installation : pio lib -g install 1523
  * 
- * Bibliothèque :  INA219 Current Sensor
- * installation :  pio lib -g install 160
+ * Bibliothèque : INA219 Current Sensor
+ * installation : pio lib -g install 160
  * 
  */
 
 #include <Arduino.h>
-#include <Preferences.h>
 
 #include <TinyGPS.h>   // GPS
 #include <HardwareSerial.h>
@@ -45,8 +44,8 @@
 #include <Position.h>           // Trame Position APRS 
 #include <Battery.h>            // Batterie tension 
 
-#define SD_CS 5                 //Chip select SD Card
-#define TM_CS 4                 //Chip select Thermocouple
+#define SD_CS 5                 // Chip select SD Card
+#define TM_CS 4                 // Chip select Thermocouple
 
 typedef struct {
     byte heure;
@@ -91,16 +90,12 @@ LM75A CapteurLM75A(false, false, false, 0); // la valeur de l'offset est déterm
 SparkFunMAX31855k thermocouple(TM_CS, 2, 2);
 MsdCard carteSD; // Avec l'affectation des broches standard de la liaison SPI SD_CS 5
 
-
 BME280I2C *bme;
 RadiationWatch radiationWatch(32, 33);
 
-
 Fx25* fx25;
 Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O'); // icon ballon
-Preferences preferences;
 
-int page;
 char ligneCSV[200];
 char commentAPRS[100];
 int year;
@@ -114,26 +109,23 @@ void setup() {
     serialGps.begin(4800, SERIAL_8N1, 16, 17); // première carte 16 17)
     pinMode(34, INPUT); // BP en entrée
     digitalWrite(2, LOW); // extinction des led sur GPIO2
-    
-    
-    
+        
     led = new Led;
     led->allumer(ROUGE); // rouge
     afficheur = new Afficheur;
     
-    afficheur->afficher("Erreur CarteINA"); // test de la carte battery
-    preferences.begin("battery", false); 
-    data.chargeBat = preferences.getFloat("charge", 3000.0);
+    afficheur->afficher("Erreur Battery"); // test de la carte battery
     laBatterie = new Battery(3000); //  instanciation d'une batterie de capacité 3000 mAh
-    laBatterie->init(data.chargeBat);         //  déclaration de la charge initiale 
-    laBatterie->setCalibration_32V_1A(); 
-
-    afficheur->afficher("Erreur CarteSD"); // test de la carte SD
-    while (!carteSD.begin()) {
+    while(!laBatterie->init()) {
         delay(3000);
     }
+   
+    afficheur->afficher("Erreur CarteSD"); // test de la carte SD
+    while (!carteSD.begin()) {
+        delay(1000);
+    }
     carteSD.fwrite("/dataBallon.csv",
-            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm,U_batterie\n");
+            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm,U_batt,I_batt,Charge_batt\n");
     
     afficheur->afficher("Erreur BME280"); // test du capteur BME280
     BME280I2C::Settings setBme(
@@ -190,7 +182,7 @@ void loop() {
     data.cpm = radiationWatch.cpm(); // lecture du nombre de déclenchement
     data.tensionBat = laBatterie->getBusVoltage_V();
     data.courentBat = laBatterie->getCurrent_mA();
-    data.chargeBat  = laBatterie->getCharge();
+    data.chargeBat  = laBatterie->getCharge(data.tempBME);
     data.SOCBat     = laBatterie->getSOC();
 
     if (lectureGPS(1000)) {
@@ -264,7 +256,7 @@ void loop() {
         if (!(data.seconde % 10)) {
             snprintf(ligneCSV,
                     sizeof (ligneCSV),
-                    "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
+                    "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
                     data.heure,
                     data.minute,
                     data.seconde,
@@ -279,7 +271,9 @@ void loop() {
                     data.humidite,
                     data.uSvh,
                     data.cpm,
-                    data.tensionBat);
+                    data.tensionBat,
+                    data.courentBat,
+                    data.chargeBat);
             //Serial.println(ligneCSV);
             carteSD.fputs("/dataBallon.csv", ligneCSV);
 
@@ -303,9 +297,16 @@ void loop() {
                     );
             pos.setComment(commentAPRS); 
 
-            fx25->txMessage(pos.getPduAprs(false)); // transmission avec compression
+            fx25->txMessage(pos.getPduAprs(false)); // transmission sans compression
             Serial.println(pos.getPduAprs(false));  // Affichage dans la console du PDU aprs position
-            preferences.putFloat("charge", data.chargeBat); // sauvegarde de la charge batterie
+            
+        }
+        // Toutes les minutes sauvegarde de la charge batterie dans la mémoire flash
+        if (!data.seconde){
+            laBatterie->memoriserCharge();
+            Serial.print("Charge memorisée : ");
+            Serial.print(data.chargeBat);
+            Serial.println(" mAh");
         }
     } else {
         afficheur->afficher("Syn GPS");
@@ -333,7 +334,7 @@ static bool lectureGPS(unsigned long ms) {
 }
 
 void onRadiation() {
-    led->allumer(RgbColor(8, 8, 8)); // Blanc
+    led->allumer(RgbColor(2, 2, 2)); // Blanc
 }
 
 void onNoise() {
