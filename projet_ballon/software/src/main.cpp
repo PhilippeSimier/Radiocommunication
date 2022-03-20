@@ -210,7 +210,7 @@ void loop() {
     data.chargeBat = laBatterie->getCharge(data.tempBME);
     data.SOCBat = laBatterie->getSOC();
 
-    if (lectureGPS(1000)) {
+    if (lectureGPS(990)) {
         led->allumer(VERT); // Vert
         data.nbSat = gps.satellites(); // Lecture du nb de satellites
         // Lecture de l'heure GPS
