@@ -7,14 +7,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Afficheur/Afficheur.h</file>
-            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/platformio.ini</file>
-            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Position/Position.h</file>
-            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Battery/Battery.h</file>
+            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/MsdCard/MsdCard.cpp</file>
             <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/src/main.cpp</file>
-            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Position/Position.cpp</file>
-            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Afficheur/Afficheur.cpp</file>
-            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Battery/Battery.cpp</file>
+            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Fx25/Fx25.h</file>
+            <file>file:/home/philippe/github/Radiocommunication/projet_ballon/software/lib/Rs/Rs.h</file>
         </group>
     </open-files>
 </project-private>

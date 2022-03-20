@@ -25,6 +25,9 @@
  * Bibliothèque : INA219 Current Sensor
  * installation : pio lib -g install 160
  * 
+ * Bibliothèque : ESP32Time @ 1.0.4
+ * installation : pio lib -g install 11703
+ * 
  */
 
 #include <Arduino.h>
@@ -42,7 +45,8 @@
 #include <MsdCard.h>            // Carte SD
 #include <Fx25.h>               // Protocole Fx25
 #include <Position.h>           // Trame Position APRS 
-#include <Battery.h>            // Batterie tension 
+#include <Battery.h>            // Batterie tension courant charge SOC
+#include <ESP32Time.h>          // RTC pour esp32
 
 #define SD_CS 5                 // Chip select SD Card
 #define TM_CS 4                 // Chip select Thermocouple
@@ -66,7 +70,7 @@ typedef struct {
     float courentBat;
     float SOCBat;
     float chargeBat;
-    
+
 } typeData;
 
 typeData data;
@@ -81,9 +85,11 @@ void tacheRadiations(void* parameter);
 TinyGPS gps;
 HardwareSerial serialGps(1); // GPS sur hardware serial 1
 
+ESP32Time rtc;
+
 Afficheur *afficheur;
 Led *led;
-Battery *laBatterie; 
+Battery *laBatterie;
 
 LM75A CapteurLM75A(false, false, false, 0); // la valeur de l'offset est déterminée par la calibration
 
@@ -104,29 +110,48 @@ unsigned long age;
 float offsetThermo = 1.0;
 
 void setup() {
-    
+
     Serial.begin(115200);
     serialGps.begin(4800, SERIAL_8N1, 16, 17); // première carte 16 17)
     pinMode(34, INPUT); // BP en entrée
     digitalWrite(2, LOW); // extinction des led sur GPIO2
-        
+
     led = new Led;
     led->allumer(ROUGE); // rouge
     afficheur = new Afficheur;
-    
+
     afficheur->afficher("Erreur Battery"); // test de la carte battery
     laBatterie = new Battery(3000); //  instanciation d'une batterie de capacité 3000 mAh
-    while(!laBatterie->init()) {
+    while (!laBatterie->init()) {
         delay(3000);
     }
-   
+
     afficheur->afficher("Erreur CarteSD"); // test de la carte SD
     while (!carteSD.begin()) {
         delay(1000);
     }
+
+    afficheur->afficher("Synchro GPS"); // test du capteur GPS
+    while (!lectureGPS(1000)) {
+        delay(1000);
+    }
+    // Lecture de l'heure GPS
+    gps.crack_datetime(&year,
+            &month,
+            &day,
+            &data.heure,
+            &data.minute,
+            &data.seconde,
+            &hundredths,
+            &age);
+    // Mise à l'heure de esp32 
+    rtc.setTime(data.seconde, data.minute, data.heure, day, month, year);
+    Serial.println(rtc.getTime("%A, %B %d %Y %H:%M:%S"));
+
+    // Ecriture de la première ligne du fichier csv
     carteSD.fwrite("/dataBallon.csv",
             "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm,U_batt,I_batt,Charge_batt\n");
-    
+
     afficheur->afficher("Erreur BME280"); // test du capteur BME280
     BME280I2C::Settings setBme(
             BME280::OSR_X1,
@@ -142,7 +167,7 @@ void setup() {
     while (!bme->begin()) {
         delay(1000);
     }
-    
+
     radiationWatch.setup();
     radiationWatch.registerRadiationCallback(&onRadiation);
     radiationWatch.registerNoiseCallback(&onNoise);
@@ -182,8 +207,8 @@ void loop() {
     data.cpm = radiationWatch.cpm(); // lecture du nombre de déclenchement
     data.tensionBat = laBatterie->getBusVoltage_V();
     data.courentBat = laBatterie->getCurrent_mA();
-    data.chargeBat  = laBatterie->getCharge(data.tempBME);
-    data.SOCBat     = laBatterie->getSOC();
+    data.chargeBat = laBatterie->getCharge(data.tempBME);
+    data.SOCBat = laBatterie->getSOC();
 
     if (lectureGPS(1000)) {
         led->allumer(VERT); // Vert
@@ -200,7 +225,7 @@ void loop() {
         // Lecture de la position
         gps.f_get_position(&data.latitude, &data.longitude, &age);
         data.altitude = gps.f_altitude();
-        
+
 
         switch (data.seconde) {
             case 0: case 1: case 2: case 3: case 4: case 5:
@@ -234,26 +259,26 @@ void loop() {
             case 35:
                 afficheur->afficherFloat("Radiation ", data.cpm, " cpm");
                 break;
-                
+
             case 40:
                 afficheur->afficherFloat("Batterie ", data.tensionBat, " V", 2);
-                break; 
-                
+                break;
+
             case 45:
                 afficheur->afficherFloat("SOC ", data.SOCBat, " %");
-                break;  
-                
+                break;
+
             case 50:
                 afficheur->afficherFloat("Courant ", data.courentBat, " mA");
-                break;     
+                break;
 
             case 54: case 55: case 56: case 57: case 58: case 59:
                 afficheur->afficherHeure(gps);
                 break;
 
         }
-        // toutes les 10 secondes log Data sur carte SD 
-        if (!(data.seconde % 10)) {
+        // toutes les 10 secondes log Data sur carte SD à (05 15 25 35 45 55)
+        if ((data.seconde % 10) == 5) {
             snprintf(ligneCSV,
                     sizeof (ligneCSV),
                     "%02d:%02d:%02d,%d,%.6f,%.6f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
@@ -279,10 +304,10 @@ void loop() {
 
         }
 
-        // toutes les 2 minutes transmission de la position en APRS 
-        if (!(data.minute % 2) && (data.seconde == 0)) {
+        // toutes les 2 minutes transmission de la position en APRS  
+        if ((data.minute % 2)==1 && (data.seconde == 57)) {
 
-            pos.setLatitude(data.latitude);           
+            pos.setLatitude(data.latitude);
             pos.setLongitude(data.longitude);
             pos.setAltitude(data.altitude);
             snprintf(commentAPRS,
@@ -295,14 +320,14 @@ void loop() {
                     data.SOCBat,
                     data.courentBat
                     );
-            pos.setComment(commentAPRS); 
+            pos.setComment(commentAPRS);
 
             fx25->txMessage(pos.getPduAprs(false)); // transmission sans compression
-            Serial.println(pos.getPduAprs(false));  // Affichage dans la console du PDU aprs position
-            
+            Serial.println(pos.getPduAprs(false)); // Affichage dans la console du PDU aprs position
+
         }
         // Toutes les minutes sauvegarde de la charge batterie dans la mémoire flash
-        if (!data.seconde){
+        if (!data.seconde) {
             laBatterie->memoriserCharge();
             Serial.print("Charge memorisée : ");
             Serial.print(data.chargeBat);
@@ -311,9 +336,7 @@ void loop() {
     } else {
         afficheur->afficher("Syn GPS");
         led->allumer(ROUGE); // Rouge 
-
     }
-
 }
 
 /**

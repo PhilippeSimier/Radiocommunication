@@ -46,6 +46,7 @@ struct correlation_tag_s {
     int itab; // Index into Tab array.
 };
 
+
 static struct {
     int symsize; // Symbol size, bits (1-8).  Always 8 for this application.
     int genpoly; // Field generator polynomial coefficients.
