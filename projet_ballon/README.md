@@ -9,7 +9,16 @@ techniques qui comprend la mesure de grandeurs physiques et la transmission des 
 
  - Dans quelle mesure l'atmosphère nous protège t'elle des rayons cosmiques  gamma ?
 
-Pour ce faire Le ballon embarque une nacelle de moins de 1,8 kg qui contient le système de télémesures avec des capteurs pour mesurer rayonnement gamma, la température extérieure et intérieure, la pression et l'humidité.
+### La Nacelle
+Pendant le vol, les capteurs seront intégrés dans la Nacelle  qui assurera les fonctions de plate-forme : intégration mécanique, isolation et contrôle thermique, localisation/datation des observations, fourniture de l’énergie grâce à des panneaux solaires et batteries.
+La nacelle devra être capable de fonctionner de manière autonome pendant 4 heures, en environnement stratosphérique (pression 50-70 hPa, température environ -80°C).
+Les contraintes de masse embarquée sous ballons pressurisés sont telles qu’il est impossible de faire voler une nacelle de plus de 1,8 kg.
+
+### Mécanique 
+(design, calculs, atelier, réalisation, intégration) : 
+Cette tâche consiste en la conception et la réalisation des coques externes de la  nacelle, ainsi que la structure interne permettant l’intégration des capteurs et des différents sous-systèmes.
+
+![Nacelle](/projet_ballon/images/Nacelle.jpg)
 
 ### La carte de télémesures
 
@@ -21,7 +30,7 @@ Le système de stockage des données à bord utilise une carte SD.
 ### Le suivi de la trajectoire de vol 
 
 Afin de faciliter la récupération de la nacelle, le système de télémesures est équipé d’un récepteur GPS pouvant fonctionner en haute altitude.
-le suivi du vol est effectué par transmission de trame position **APRS** encapsulé dans des trames **FX25**. la position du ballon peut être suivie sur le site https://aprs.fi/
+le suivi du vol est effectué par transmission de la position dans des trames **APRS** encapsulé dans des trames **FX25**. la position du ballon peut être suivie sur le site https://aprs.fi/
 
 ![aprs.fi](/projet_ballon/images/Capture_aprs.fi.png)
 
