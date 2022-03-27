@@ -18,7 +18,7 @@ Les contraintes de masse embarquée sous ballons pressurisés sont telles qu’i
 (design, calculs, atelier, réalisation, intégration) : 
 Cette tâche consiste en la conception et la réalisation des coques externes de la  nacelle, ainsi que la structure interne permettant l’intégration des capteurs et des différents sous-systèmes.
 
-![Nacelle](/projet_ballon/images/Nacelle.jpg)
+![Nacelle](/projet_ballon/images/Nacelle_construction.jpg)
 
 ### La carte de télémesures
 
