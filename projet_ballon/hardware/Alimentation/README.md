@@ -13,5 +13,8 @@ La  _génération d'énergie_  permet le fonctionnement de la nacelle en lui fou
 
  ![schema alimentation](/projet_ballon/hardware/Alimentation/alim2022sch_vignette.png)
 
- 
+ ## PCB
+ ![carte coté composants](/projet_ballon/hardware/Alimentation/20220401_142404.jpg)
+
+![carte coté batteries](/projet_ballon/hardware/Alimentation/20220401_142421.jpg)
 
