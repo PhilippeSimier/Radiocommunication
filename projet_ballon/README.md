@@ -22,10 +22,12 @@ Cette tâche consiste en la conception et la réalisation des coques externes de
 
 ### La carte de télémesures
 
-![Carte de télémesures](/projet_ballon/images/carte_télémesures.jpg)
+![Carte de télémesures](/projet_ballon/images/carte_télémesures_2.jpg)
 
 Tout  au  long  du  vol,  les  mesures  sont  enregistrées à bord et aussi envoyées au sol par l'émetteur embarqué.
 Le système de stockage des données à bord utilise une carte SD.
+
+![Carte de télémesures](/projet_ballon/images/carte_télémesures.jpg)
 
 ### Le suivi de la trajectoire de vol 
 
