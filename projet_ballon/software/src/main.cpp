@@ -112,7 +112,7 @@ float offsetThermo = 1.0;
 void setup() {
 
     Serial.begin(115200);
-    serialGps.begin(4800, SERIAL_8N1, 16, 17); // première carte 16 17)
+    serialGps.begin(4800, SERIAL_8N1, 17, 16); // première carte 16 17)
     pinMode(34, INPUT); // BP en entrée
     digitalWrite(2, LOW); // extinction des led sur GPIO2
 
@@ -182,7 +182,7 @@ void setup() {
     afficheur->afficher("Syn GPS");
 
     // Communication APRS sur FX25
-    fx25 = new Fx25();
+    fx25 = new Fx25();        // fx25 = new Fx25(144.200);
     char srcCallsign[] = "F4KMN-13";
     char dstCallsign[] = "F4KMN-2";
     char path1[] = "WIDE1-1";

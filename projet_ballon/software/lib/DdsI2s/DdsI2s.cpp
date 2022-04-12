@@ -7,10 +7,11 @@
 
 #include "DdsI2s.h"
 
-DdsI2s::DdsI2s(dac_channel_t _dacChannel, gpio_num_t _syncLed) :
+DdsI2s::DdsI2s(float _frequence_tx_rx, dac_channel_t _dacChannel, gpio_num_t _syncLed) :
 syncLed(_syncLed),
 dacChannel(_dacChannel),
 accumulateur(0),
+frequence_tx_rx(_frequence_tx_rx),        
 dra(new DRA818())        
 {
     anchor = this;
@@ -44,7 +45,7 @@ void DdsI2s::begin() {
     uint8_t ret;
     //modelDra, freq_rx, freq_tx, squelch, vol, ctcss_rx, ctcss_tx, bandwidth, pre, high, low
 
-    ret = dra->configure(DRA_TYPE, TX_RX_FREQUENCY, TX_RX_FREQUENCY, 4, 8, 0, 0, DRA818_12K5, true, true, true);
+    ret = dra->configure(DRA_TYPE, frequence_tx_rx, frequence_tx_rx, 4, 8, 0, 0, DRA818_12K5, true, true, true);
     if (!ret) {
         Serial.println("\nError while configuring DRA818");
     } else {

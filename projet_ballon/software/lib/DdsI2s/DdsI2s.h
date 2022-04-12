@@ -47,8 +47,10 @@ typedef struct {
 
 class DdsI2s {
 public:
-    DdsI2s( dac_channel_t _dacChannel = DAC_CHANNEL_1,
-            gpio_num_t _syncLed = GPIO_NUM_2);
+    DdsI2s( float _frequence_tx_rx = 144.800,
+            dac_channel_t _dacChannel = DAC_CHANNEL_1,
+            gpio_num_t _syncLed = GPIO_NUM_2
+            );
 
     DdsI2s(const DdsI2s& orig);
     virtual ~DdsI2s();
@@ -69,12 +71,15 @@ private:
     static DdsI2s* anchor;
     static void marshall(void *);
     
+    
     gpio_num_t      syncLed;
     dac_channel_t   dacChannel;
     uint32_t        accumulateur;
+    float           frequence_tx_rx;
     uint8_t         flip;
     attenuation_t   attenuation;
     uint32_t        freq[2];
+    
     DRA818          *dra;
 };
 

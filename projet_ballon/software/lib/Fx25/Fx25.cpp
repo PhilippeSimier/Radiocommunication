@@ -7,11 +7,11 @@
 
 #include "Fx25.h"
 
-Fx25::Fx25() :
+Fx25::Fx25(float _frequence_tx_rx) :
 fec(false),
 attenuation(dB_0) {
     buffer = new uint8_t[AX25_MAX_LENGTH];
-    leDdsI2s = new DdsI2s();
+    leDdsI2s = new DdsI2s(_frequence_tx_rx);
     leDdsI2s->begin();
     leRs = new Rs();
 }

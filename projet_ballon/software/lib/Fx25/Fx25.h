@@ -21,8 +21,8 @@
 
 class Fx25 {
 public:
-   
-    Fx25();
+
+    Fx25(float _frequence_tx_rx = 144.800);
     Fx25(const Fx25& orig);
     virtual ~Fx25();
 
@@ -34,19 +34,19 @@ public:
     void txMessage(char *bufMsg);
     void setFec(bool val);
     void debug();
-    
+
 private:
 
-    uint8_t*  addCallsign(uint8_t *buf, char *callsign);
-    void      calculateCRC();
-    bool    fec;
+    uint8_t* addCallsign(uint8_t *buf, char *callsign);
+    void calculateCRC();
+    bool fec;
     
-    uint8_t*  buffer;
-    int       frameLength;  //longeur de la trame à envoyer
+    uint8_t* buffer;
+    int frameLength; //longeur de la trame à envoyer
     attenuation_t attenuation;
-    
-    DdsI2s  *leDdsI2s;
-    Rs      *leRs;    
+
+    DdsI2s *leDdsI2s;
+    Rs *leRs;
 
 };
 
