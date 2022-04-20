@@ -53,6 +53,29 @@ void Afficheur::afficherHeure(TinyGPS &gps) {
 }
 
 /**
+ * Méthode pour afficher la date
+ * @param gps
+ */
+void Afficheur::afficherDate(TinyGPS &gps){
+    
+    int year;
+    byte month, day, hour, minute, second, hundredths;
+    unsigned long age;
+    char mois[][12] = {"Jan", "Fev", "Mars", "Avril", "Mai", "Juin", "Juillet" , "Aout" , "Sep", "Oct", "Nov", "Dec"};
+
+    char sz[32] = "Erreur date";
+    gps.crack_datetime(&year, &month, &day, &hour, &minute, &second, &hundredths, &age);
+
+    if (age != TinyGPS::GPS_INVALID_AGE && month > 0) {
+        snprintf(sz, sizeof (sz), "%02d %s %04d ", day, mois[month-1], year);
+    }
+
+    String message(sz);
+    afficher(message);
+    
+}
+
+/**
  * Méthode pour afficher la position GPS
  * @param gps
  */
@@ -64,7 +87,8 @@ void Afficheur::afficherPosition(TinyGPS &gps) {
     gps.f_get_position(&flat, &flon, &age);
 
     if (flat != TinyGPS::GPS_INVALID_F_ANGLE) {
-        snprintf(sz, sizeof(sz), "%.6f\n%.6f", flat, flon);
+        snprintf(sz, sizeof(sz), "%.5f %.5f", flat, flon);
+        
     }
     String message(sz);
     afficher(message);

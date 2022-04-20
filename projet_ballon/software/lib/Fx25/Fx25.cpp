@@ -7,11 +7,11 @@
 
 #include "Fx25.h"
 
-Fx25::Fx25(float _frequence_tx_rx) :
+Fx25::Fx25() :
 fec(false),
 attenuation(dB_0) {
     buffer = new uint8_t[AX25_MAX_LENGTH];
-    leDdsI2s = new DdsI2s(_frequence_tx_rx);
+    leDdsI2s = new DdsI2s();
     leDdsI2s->begin();
     leRs = new Rs();
 }
@@ -59,7 +59,7 @@ void Fx25::txMessage(char *bufMsg) {
  *path1 chemin1
  *path2 chemin2
  */
-void Fx25::begin(char *sourceCallsign, char *destinationCallsign, char *path1, char *path2) {
+void Fx25::begin(const char *sourceCallsign, const char *destinationCallsign, const char *path1, const char *path2) {
     uint8_t *ptr = buffer;
 
     ptr = addCallsign(buffer, destinationCallsign); // ajoute la destination dans l'header AX25
@@ -80,7 +80,7 @@ void Fx25::begin(char *sourceCallsign, char *destinationCallsign, char *path1, c
    @return  le pointeur courant ds le buffer pour le prochain ajout
  */
 
-uint8_t* Fx25::addCallsign(uint8_t *buf, char *callsign) {
+uint8_t* Fx25::addCallsign(uint8_t *buf, const char *callsign) {
     char ssid;
     char i;
     for (i = 0; i < 6; i++) {

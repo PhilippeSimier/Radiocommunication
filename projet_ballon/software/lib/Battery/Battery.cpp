@@ -33,7 +33,7 @@ Battery::Battery(const Battery& orig) {
 bool Battery::init(){
     
     setCalibration_32V_1A(); 
-    charge = preferences.getFloat("charge", 3000.0);;
+    charge = preferences.getFloat("charge", 3000.0);
     bool res = begin();
     return res;
     

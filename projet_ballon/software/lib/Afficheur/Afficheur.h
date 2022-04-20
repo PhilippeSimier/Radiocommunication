@@ -23,6 +23,7 @@ public:
     
     void afficher(String message);
     void afficherHeure(TinyGPS &gps);
+    void afficherDate(TinyGPS &gps);
     void afficherPosition(TinyGPS &gps);
     void afficherFloat(String message, float valeur, String unite, int precision=1);
     

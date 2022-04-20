@@ -1,6 +1,6 @@
 /* 
  * File:   DdsI2s.h
- * Author: Anthony Le Cren
+ * Author: Anthony Le Cren & Philippe SIMIER 
  *
  * Created on 18 août 2021, 17:33
  * 
@@ -15,6 +15,7 @@
 #include <Arduino.h>
 #include <driver/i2s.h>
 #include <driver/dac.h>
+#include <Preferences.h>
 #include "../DRA818/DRA818.h"
 
 
@@ -47,8 +48,7 @@ typedef struct {
 
 class DdsI2s {
 public:
-    DdsI2s( float _frequence_tx_rx = 144.800,
-            dac_channel_t _dacChannel = DAC_CHANNEL_1,
+    DdsI2s( dac_channel_t _dacChannel = DAC_CHANNEL_1,
             gpio_num_t _syncLed = GPIO_NUM_2
             );
 
@@ -81,6 +81,7 @@ private:
     uint32_t        freq[2];
     
     DRA818          *dra;
+    Preferences     prefRadio;
 };
 
 #endif /* DDSI2S_H */

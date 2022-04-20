@@ -47,6 +47,7 @@
 #include <Position.h>           // Trame Position APRS 
 #include <Battery.h>            // Batterie tension courant charge SOC
 #include <ESP32Time.h>          // RTC pour esp32
+#include <Preferences.h>        // Classe pour écrire et lire la configuration
 
 #define SD_CS 5                 // Chip select SD Card
 #define TM_CS 4                 // Chip select Thermocouple
@@ -101,6 +102,7 @@ RadiationWatch radiationWatch(32, 33);
 
 Fx25* fx25;
 Position pos(48.010237, 0.206267, "Ballon SNIR", '/', 'O'); // icon ballon
+Preferences configuration;
 
 char ligneCSV[200];
 char commentAPRS[100];
@@ -125,33 +127,17 @@ void setup() {
     while (!laBatterie->init()) {
         delay(3000);
     }
-
+    configuration.begin("battery", false); 
+    float charge = configuration.getFloat("charge", 3000.0);
+    afficheur->afficherFloat("charge0", charge, " mAh");
+    configuration.end();
+    delay(5000);
+    
     afficheur->afficher("Erreur CarteSD"); // test de la carte SD
     while (!carteSD.begin()) {
         delay(1000);
     }
-
-    afficheur->afficher("Synchro GPS"); // test du capteur GPS
-    while (!lectureGPS(1000)) {
-        delay(1000);
-    }
-    // Lecture de l'heure GPS
-    gps.crack_datetime(&year,
-            &month,
-            &day,
-            &data.heure,
-            &data.minute,
-            &data.seconde,
-            &hundredths,
-            &age);
-    // Mise à l'heure de esp32 
-    rtc.setTime(data.seconde, data.minute, data.heure, day, month, year);
-    Serial.println(rtc.getTime("%A, %B %d %Y %H:%M:%S"));
-
-    // Ecriture de la première ligne du fichier csv
-    carteSD.fwrite("/dataBallon.csv",
-            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm,U_batt,I_batt,Charge_batt\n");
-
+    
     afficheur->afficher("Erreur BME280"); // test du capteur BME280
     BME280I2C::Settings setBme(
             BME280::OSR_X1,
@@ -168,6 +154,32 @@ void setup() {
         delay(1000);
     }
 
+    afficheur->afficher("Synchro GPS"); // test du capteur GPS
+    while (!lectureGPS(1000)) {
+        delay(1000);
+    }
+    // Lecture de l'heure GPS
+    gps.crack_datetime(&year,
+            &month,
+            &day,
+            &data.heure,
+            &data.minute,
+            &data.seconde,
+            &hundredths,
+            &age);
+    // Mise à date et heure de la rtc esp32 
+    rtc.setTime(data.seconde, data.minute, data.heure, day, month, year);
+    Serial.println(rtc.getTime("%A, %B %d %Y %H:%M:%S"));
+    afficheur->afficherHeure(gps);
+    delay(5000);
+    afficheur->afficherDate(gps);
+    delay(5000);
+    // Ecriture de la première ligne du fichier csv
+    carteSD.fwrite("/dataBallon.csv",
+            "Time,Nb_Sat,Latitude,Longitude,Altitude,Temp_Int,Temp_BME,Temp_Ext,Pression,Humidité,Dose_uSvh,Cpm,U_batt,I_batt,Charge_batt\n");
+
+    
+
     radiationWatch.setup();
     radiationWatch.registerRadiationCallback(&onRadiation);
     radiationWatch.registerNoiseCallback(&onNoise);
@@ -179,17 +191,21 @@ void setup() {
             1, /* priority of the task */
             NULL); /* Task handle to keep track of created task */
 
-    afficheur->afficher("Syn GPS");
+    
 
     // Communication APRS sur FX25
+    configuration.begin("radio", false); 
     fx25 = new Fx25();        // fx25 = new Fx25(144.200);
-    char srcCallsign[] = "F4KMN-13";
-    char dstCallsign[] = "F4KMN-2";
-    char path1[] = "WIDE1-1";
-    char path2[] = "WIDE2-2";
-    fx25->begin(srcCallsign, dstCallsign, path1, path2);
+    
+    fx25->begin(configuration.getString("srcCallsign", "F4KMN-13").c_str(), 
+                configuration.getString("dstCallsign", "F4KMN-1").c_str(), 
+                configuration.getString("path1", "WIDE1-1").c_str(), 
+                configuration.getString("path2", "WIDE2-2").c_str());
+    
     fx25->setFec(true); // La trame Ax25 est encapsulée dans une trame Fec
-
+    configuration.end();
+    
+    afficheur->afficher("Setup done");
 }
 
 void loop() {

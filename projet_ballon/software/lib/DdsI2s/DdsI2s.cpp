@@ -1,23 +1,24 @@
 /* 
  * File:   DdsI2s.cpp
- * Author: Anthony Le Cren
+ * Author: Anthony Le Cren & Philippe SIMIER 
  * 
  * Created on 18 août 2021, 17:33
  */
 
 #include "DdsI2s.h"
 
-DdsI2s::DdsI2s(float _frequence_tx_rx, dac_channel_t _dacChannel, gpio_num_t _syncLed) :
+DdsI2s::DdsI2s( dac_channel_t _dacChannel, gpio_num_t _syncLed) :
 syncLed(_syncLed),
 dacChannel(_dacChannel),
 accumulateur(0),
-frequence_tx_rx(_frequence_tx_rx),        
+frequence_tx_rx(TX_RX_FREQUENCY),        
 dra(new DRA818())        
 {
     anchor = this;
     pinMode(syncLed, OUTPUT);
     freq[0] = computeIncrementPhase(1200);
     freq[1] = computeIncrementPhase(2200);
+    
 }
 
 void DdsI2s::marshall(void * parametres) {
@@ -44,7 +45,9 @@ void DdsI2s::begin() {
     
     uint8_t ret;
     //modelDra, freq_rx, freq_tx, squelch, vol, ctcss_rx, ctcss_tx, bandwidth, pre, high, low
-
+    prefRadio.begin("radio", false);
+    frequence_tx_rx = prefRadio.getFloat("frequence", 144.800);
+    prefRadio.end();
     ret = dra->configure(DRA_TYPE, frequence_tx_rx, frequence_tx_rx, 4, 8, 0, 0, DRA818_12K5, true, true, true);
     if (!ret) {
         Serial.println("\nError while configuring DRA818");

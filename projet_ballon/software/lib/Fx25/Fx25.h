@@ -22,14 +22,14 @@
 class Fx25 {
 public:
 
-    Fx25(float _frequence_tx_rx = 144.800);
+    Fx25();
     Fx25(const Fx25& orig);
     virtual ~Fx25();
 
-    void begin(char *sourceCallsign,
-            char *destinationCallsign,
-            char *path1,
-            char *path2);
+    void begin(const char *sourceCallsign,
+            const char *destinationCallsign,
+            const char *path1,
+            const char *path2);
 
     void txMessage(char *bufMsg);
     void setFec(bool val);
@@ -37,7 +37,7 @@ public:
 
 private:
 
-    uint8_t* addCallsign(uint8_t *buf, char *callsign);
+    uint8_t* addCallsign(uint8_t *buf, const char *callsign);
     void calculateCRC();
     bool fec;
     

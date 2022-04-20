@@ -9,6 +9,10 @@ techniques qui comprend la mesure de grandeurs physiques et la transmission des 
 
  - Dans quelle mesure l'atmosphère nous protège t'elle des rayons cosmiques  gamma ?
 
+
+
+Les sources de rayonnement gamma dans l'Univers sont connues depuis 1948 mais n'ont été observées que depuis le début des années 1960. En effet, les photons gamma sont presque complètement arrêtés par l'atmosphère terrestre. Les premières observations astronomiques ont été faites à partir de ballons-sondes.
+
 ### La Nacelle
 Pendant le vol, les capteurs seront intégrés dans la Nacelle  qui assurera les fonctions de plate-forme : intégration mécanique, isolation et contrôle thermique, localisation/datation des observations, fourniture de l’énergie grâce à des panneaux solaires et batteries.
 La nacelle devra être capable de fonctionner de manière autonome pendant 4 heures, en environnement stratosphérique (pression 50-70 hPa, température environ -80°C).
@@ -16,16 +20,19 @@ Les contraintes de masse embarquée sous ballons pressurisés sont telles qu’i
 
 ### Mécanique 
 (design, calculs, atelier, réalisation, intégration) : 
-Cette tâche consiste en la conception et la réalisation des coques externes de la  nacelle, ainsi que la structure interne permettant l’intégration des capteurs et des différents sous-systèmes.
+Cette tâche consiste en la conception et la réalisation des coques externes de la  nacelle, ainsi que la structure interne permettant l’intégration des capteurs et des différents sous-systèmes. La structure de la nacelle est réalisée en polystyrène expansé de 30mm d'épaisseur.
+La nacelle est recouverte par collage d'une couverture de survie. La colle utilisée est une colle en spray **3M PhotoMount**.
 
 ![Nacelle](/projet_ballon/images/Nacelle_construction.jpg)
 
-### La carte de télémesures
+### Les cartes de télémesures et d'alimentation
+
+L’ensemble des cartes électroniques ont le même format et sont fixées au couvercle. Elles sont ainsi facilement retirables de la nacelle. Les cartes sont empilées  et sont maintenues séparées les unes des autres au moyen de 4 entretoises hexagonales disposées dans les coins. 
 
 ![Carte de télémesures](/projet_ballon/images/carte_télémesures_2.jpg)
 
-Tout  au  long  du  vol,  les  mesures  sont  enregistrées à bord et aussi envoyées au sol par l'émetteur embarqué.
-Le système de stockage des données à bord utilise une carte SD.
+Tout  au  long  du  vol,  les  mesures  sont  enregistrées à bord sur une carte SD. elles  sont aussi envoyées au sol par l'émetteur embarqué.
+
 
 ![Carte de télémesures](/projet_ballon/images/carte_télémesures.jpg)
 
