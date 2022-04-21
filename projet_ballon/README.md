@@ -1,17 +1,34 @@
 ﻿# Ballon sonde stratosphérique
 
 ## Objectifs pédagogiques
-La  construction d'une nacelle expérimentale de ballon doit permettre aux jeunes, une découverte des sciences et des  
-techniques qui comprend la mesure de grandeurs physiques et la transmission des données par radiofréquence.  Une initiation à la démarche de projet est aussi proposée.
+La  construction d'une nacelle expérimentale de ballon doit permettre aux jeunes, une découverte des sciences expérimentales. Les expériences  mettent en oeuvre la mesure de grandeurs physiques avec la transmission des données par radiofréquence.  Une initiation à la démarche de projet est aussi proposée.
 
 ## Introduction
  L'objectif  est de faire de la science afin de pouvoir mieux comprendre notre atmosphère jusqu’à 30 km d’altitude. Nous tenterons de répondre à la question suivante :
 
- - Dans quelle mesure l'atmosphère nous protège t'elle des rayons cosmiques  gamma ?
+ - Dans quelle mesure l'atmosphère nous protège t-elle du [rayonnenemt cosmiques](https://www.sievert-system.org/#Rayonnement)   ?
 
+Le rayonnement cosmique est formé de particules qui se déplacent à une vitesse proche de celle de la lumière. Il est constitué de deux composantes, l’une stable, d’origine galactique, l’autre plus fluctuante, liée à l’activité du soleil.
 
+Les sources de **rayonnement gamma** dans l'Univers sont connues depuis 1948 mais n'ont été observées que depuis le début des années 1960. En effet, les photons gamma sont presque complètement arrêtés par l'atmosphère terrestre. Les premières observations astronomiques ont été faites à partir de ballons-sondes.
+|Altitude (m)|  Débit de dose (μSv/h)|
+|--|--|
+|80  | 0.08 |
+|5000  | 1.8 |
+|8200  | 4.1 |
+|10000  | 5.2 |
+|11200  | 7.7 |
+ [Unité de mesures](https://www.sievert-system.org/#Mesure)
 
-Les sources de rayonnement gamma dans l'Univers sont connues depuis 1948 mais n'ont été observées que depuis le début des années 1960. En effet, les photons gamma sont presque complètement arrêtés par l'atmosphère terrestre. Les premières observations astronomiques ont été faites à partir de ballons-sondes.
+## Principe de la mesure rayonnement ionisant
+
+Le rayonnement est composé de photons gamma et de particules capables de provoquer, directement ou indirectement, la formation d'ions (par arrachement d'électrons) dans la matière qu’ils traversent.
+
+La détection du rayonnement ionisant repose  sur un type particulier de diode, la **diode PIN**. PIN pour Positive Intrisic Negative fait référence directement à la manière dont est constitué le composant.  Dans  une diode PIN on trouve entre les zones P et N une zone non dopée dite intrinsèque.  
+La structure PIN permet la détection de photons, un peu à la manière d'un tube Geiger-Muller avec un effet cascade et une brève conductivité. Cela signifie que si un rayon de haute énergie est absorbé, un signal détectable d'électrons est généré. l'absorption photoélectrique est dominante dans la région d'énergie gamma d'intérêt entre 5 keV et 100 keV.
+Les détecteurs basés sur **l'absorption directe dans le silicium** constituent une alternative  peu coûteuse par rapport au détecteur à gaz (tube Geiger-Muller).
+le capteur utilisé possède une photodiode PIN **[X100-7](https://www.first-sensor.com/cms/upload/datasheets/X100-7_THD_5000040.pdf)** pour la détection des rayons ionisants, ayant une surface de section efficace à grande échelle (100 mm ^ 2), fabriquée par la société **FirstSensor** qui a également fourni un capteur similaire pour le télescope à rayons X de la NASA. En règle générale, l'efficacité du capteur à photodiode PIN est extrêmement stable et ne présente aucune dégradation liée à l'âge.
+La détection et l’électronique qui l'entoure est là pour amplifier le signal et le transmettre avec des niveaux adaptés vers un entrée digital de l'ESP32. On obtient le débit de dose par comptage des impulsions sur une periode donnée.
 
 ### La Nacelle
 Pendant le vol, les capteurs seront intégrés dans la Nacelle  qui assurera les fonctions de plate-forme : intégration mécanique, isolation et contrôle thermique, localisation/datation des observations, fourniture de l’énergie grâce à des panneaux solaires et batteries.
