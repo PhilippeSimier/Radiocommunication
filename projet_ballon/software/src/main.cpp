@@ -48,6 +48,7 @@
 #include <Battery.h>            // Batterie tension courant charge SOC
 #include <ESP32Time.h>          // RTC pour esp32
 #include <Preferences.h>        // Classe pour écrire et lire la configuration
+#include <Menu.h>               // Classe commandes via la console
 
 #define SD_CS 5                 // Chip select SD Card
 #define TM_CS 4                 // Chip select Thermocouple
@@ -74,13 +75,13 @@ typedef struct {
 
 } typeData;
 
-typeData data;
-
 // Les prototypes
 static bool lectureGPS(unsigned long ms);
 void onRadiation();
 void onNoise();
 void tacheRadiations(void* parameter);
+
+typeData data;
 
 
 TinyGPS gps;
@@ -91,7 +92,7 @@ ESP32Time rtc;
 Afficheur *afficheur;
 Led *led;
 Battery *laBatterie;
-
+Menu *leMenu;
 LM75A CapteurLM75A(false, false, false, 0); // la valeur de l'offset est déterminée par la calibration
 
 SparkFunMAX31855k thermocouple(TM_CS, 2, 2);
@@ -121,7 +122,11 @@ void setup() {
     led = new Led;
     led->allumer(ROUGE); // rouge
     afficheur = new Afficheur;
-
+    leMenu = new Menu;
+    leMenu->setup();
+    leMenu->run();
+    
+    
     afficheur->afficher("Erreur Battery"); // test de la carte battery
     laBatterie = new Battery(3000); //  instanciation d'une batterie de capacité 3000 mAh
     while (!laBatterie->init()) {

@@ -19,6 +19,10 @@
           <in>LM75A.cpp</in>
           <in>LM75A.h</in>
         </df>
+        <df name="Menu">
+          <in>Menu.cpp</in>
+          <in>Menu.h</in>
+        </df>
       </df>
       <df name="src">
         <in>main.cpp</in>
@@ -306,6 +310,10 @@
       <item path="lib/Led/Led.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="lib/Led/Led.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="lib/Menu/Menu.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="lib/Menu/Menu.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="platformio.ini" ex="false" tool="3" flavor2="0">
       </item>

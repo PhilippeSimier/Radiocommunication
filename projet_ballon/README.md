@@ -6,7 +6,7 @@ La  construction d'une nacelle expérimentale de ballon doit permettre aux jeune
 ## Introduction
  L'objectif  est de faire de la science afin de pouvoir mieux comprendre notre atmosphère jusqu’à 30 km d’altitude. Nous tenterons de répondre à la question suivante :
 
- - Dans quelle mesure l'atmosphère nous protège t-elle du [rayonnenemt cosmiques](https://www.sievert-system.org/#Rayonnement)   ?
+ - Dans quelle mesure l'atmosphère nous protège t-elle du [rayonnement cosmiques](https://www.sievert-system.org/#Rayonnement)   ?
 
 Le rayonnement cosmique est formé de particules qui se déplacent à une vitesse proche de celle de la lumière. Il est constitué de deux composantes, l’une stable, d’origine galactique, l’autre plus fluctuante, liée à l’activité du soleil.
 
