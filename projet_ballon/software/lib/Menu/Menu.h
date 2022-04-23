@@ -30,6 +30,7 @@ public:
     static void _path1_(ArgList& L, Stream& S);
     static void _path2_(ArgList& L, Stream& S);
     static void _frequence_(ArgList& L, Stream& S);
+    static void _charge_(ArgList& L, Stream& S);
     static void _config_(ArgList& L, Stream& S);
     
 

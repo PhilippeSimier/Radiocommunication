@@ -28,6 +28,9 @@
  * Bibliothèque : ESP32Time @ 1.0.4
  * installation : pio lib -g install 11703
  * 
+ * Bibliothèque : Console
+ * installation : pio lib -g install "akoro/Console@^1.2.1"
+ * 
  */
 
 #include <Arduino.h>

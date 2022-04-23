@@ -1,24 +1,26 @@
 /* 
  * File:   Menu.cpp
- * Author: philippe SIMIER
+ * Author: philippe SIMIER Touchard Washington le Mans
  * 
  * Created on 22 avril 2022, 17:11
  */
 
 #include "Menu.h"
 
-Menu::Menu() {
-    con = new Console();
-    configuration = new Preferences();
+Menu::Menu() :
+    con(new Console()),
+    configuration(new Preferences()) 
+{
     anchor = this;
-
 }
 
 Menu::Menu(const Menu& orig) {
 }
 
 Menu::~Menu() {
-    //delete con;
+
+    delete configuration;
+    anchor = NULL;
 }
 
 void Menu::run() {
@@ -28,6 +30,10 @@ void Menu::run() {
     exitFlag = false;
 
     while ((cpt < 10) && !exitFlag) {
+
+        Serial.print(".");
+        cpt++;
+
         if (Serial.available() > 0) {
             car = Serial.read();
             if (car == 'm') {
@@ -37,11 +43,9 @@ void Menu::run() {
                 }
             }
         }
-        Serial.print(".");
         delay(1000);
-        cpt++;
     }
-    Serial.println("\nConsole exit");
+    Serial.println(F("\nConsole exit"));
 }
 
 void Menu::setup() {
@@ -53,6 +57,7 @@ void Menu::setup() {
     con->onCmd("path2", _path2_);
     con->onCmd("freq", _frequence_);
     con->onCmd("show", _config_);
+    con->onCmd("charge", _charge_);
     con->onUnknown(_unknown);
     con->start();
 }
@@ -63,14 +68,15 @@ void Menu::_exit_(ArgList& L, Stream& S) {
 }
 
 void Menu::_help_(ArgList& L, Stream& S) {
-    Serial.println(F("Commandes disponibles :"));
-    Serial.println(F("Set  Source callsign : source f4kmn-13"));
-    Serial.println(F("Set  Dest callsign   : dest f4kmn-1"));
-    Serial.println(F("Set  Path1           : path1 WIDE1-1"));
-    Serial.println(F("Set  Path2           : path2 WIDE2-2"));
-    Serial.println(F("Set  Frequence       : freq 144.800"));
-    Serial.println(F("Show configuration   : show"));
-    Serial.println(F("Exit menu            : exit"));
+    S.println(F("Commandes disponibles :"));
+    S.println(F("Set  Source callsign : source f4kmn-13"));
+    S.println(F("Set  Dest callsign   : dest f4kmn-1"));
+    S.println(F("Set  Path1           : path1 WIDE1-1"));
+    S.println(F("Set  Path2           : path2 WIDE2-2"));
+    S.println(F("Set  Frequence       : freq 144.800"));
+    S.println(F("Set  Charge (mAh)    : charge 2000"));
+    S.println(F("Show configuration   : show"));
+    S.println(F("Exit menu            : exit"));
 }
 
 bool Menu::acceptCmd(String cmd, int longMin, int longMax) {
@@ -78,14 +84,14 @@ bool Menu::acceptCmd(String cmd, int longMin, int longMax) {
     if (cmd.length() >= longMin && cmd.length() <= longMax) {
         return true;
     } else {
-        Serial.println(F("erreur"));
         return false;
     }
 }
 
 void Menu::_unknown(String& L, Stream& S) {
-    S.print("? ");
-    S.println(L);
+
+    S.print(L);
+    S.println(" : commande introuvable");
 }
 
 void Menu::_source_(ArgList& L, Stream& S) {
@@ -94,10 +100,13 @@ void Menu::_source_(ArgList& L, Stream& S) {
     p = L.getNextArg();
 
     if (anchor->acceptCmd(p, 3, 10)) {
-        S.printf("Source Callsign is %s\n\r", p.c_str());
+
         anchor->configuration->begin("radio", false);
         anchor->configuration->putString("srcCallsign", p);
+        S.printf("Source Callsign is %s\n\r", anchor->configuration->getString("srcCallsign").c_str());
         anchor->configuration->end();
+    } else {
+        S.println("Erreur");
     }
 }
 
@@ -107,10 +116,12 @@ void Menu::_dest_(ArgList& L, Stream& S) {
     p = L.getNextArg();
 
     if (anchor->acceptCmd(p, 3, 10)) {
-        S.printf("Dest Callsign is %s\n\r", p.c_str());
         anchor->configuration->begin("radio", false);
         anchor->configuration->putString("dstCallsign", p);
+        S.printf("Dest Callsign is %s\n\r", anchor->configuration->getString("dstCallsign").c_str());
         anchor->configuration->end();
+    } else {
+        S.println("Erreur");
     }
 }
 
@@ -120,10 +131,12 @@ void Menu::_path1_(ArgList& L, Stream& S) {
     p = L.getNextArg();
 
     if (anchor->acceptCmd(p, 3, 10)) {
-        S.printf("Path1 is %s\n\r", p.c_str());
         anchor->configuration->begin("radio", false);
         anchor->configuration->putString("path1", p);
+        S.printf("Path1 is %s\n\r", anchor->configuration->getString("path1").c_str());
         anchor->configuration->end();
+    } else {
+        S.println("Erreur");
     }
 }
 
@@ -133,20 +146,26 @@ void Menu::_path2_(ArgList& L, Stream& S) {
     p = L.getNextArg();
 
     if (anchor->acceptCmd(p, 3, 10)) {
-        S.printf("Path2 is %s\n\r", p.c_str());
+
         anchor->configuration->begin("radio", false);
         anchor->configuration->putString("path2", p);
+        S.printf("Path2 is %s\n\r", anchor->configuration->getString("path2").c_str());
         anchor->configuration->end();
+    } else {
+        S.println("Erreur");
     }
 }
 
 void Menu::_config_(ArgList& L, Stream& S) {
     anchor->configuration->begin("radio", false);
-    Serial.printf("Source Callsign : %s\n\r", anchor->configuration->getString("srcCallsign").c_str());
-    Serial.printf("Dest   Callsign : %s\n\r", anchor->configuration->getString("dstCallsign").c_str());
-    Serial.printf("Path1           : %s\n\r", anchor->configuration->getString("path1").c_str());
-    Serial.printf("Path2           : %s\n\r", anchor->configuration->getString("path2").c_str());
-    Serial.printf("Frequence       : %.3f\n\r", anchor->configuration->getFloat("frequence"));
+    S.printf("Source Callsign : %s\n\r", anchor->configuration->getString("srcCallsign").c_str());
+    S.printf("Dest   Callsign : %s\n\r", anchor->configuration->getString("dstCallsign").c_str());
+    S.printf("Path1           : %s\n\r", anchor->configuration->getString("path1").c_str());
+    S.printf("Path2           : %s\n\r", anchor->configuration->getString("path2").c_str());
+    S.printf("Frequence (MHz) : %.3f\n\r", anchor->configuration->getFloat("frequence"));
+    anchor->configuration->end();
+    anchor->configuration->begin("battery", false);
+    S.printf("Charge (mAh)    : %.1f\n\r", anchor->configuration->getFloat("charge"));
     anchor->configuration->end();
 }
 
@@ -156,12 +175,29 @@ void Menu::_frequence_(ArgList& L, Stream& S) {
     p = L.getNextArg();
 
     if (anchor->acceptCmd(p, 7, 7)) {
-        S.printf("Frequence is %.3f Mhz\n\r", p.toFloat());
+
         anchor->configuration->begin("radio", false);
         anchor->configuration->putFloat("frequence", p.toFloat());
+        S.printf("Frequence is %.3f Mhz\n\r", anchor->configuration->getFloat("frequence"));
         anchor->configuration->end();
-    }else{
+    } else {
         S.println("Erreur frequence");
+    }
+}
+
+void Menu::_charge_(ArgList& L, Stream& S) {
+
+    String p;
+    p = L.getNextArg();
+
+    if (anchor->acceptCmd(p, 2, 10)) {
+
+        anchor->configuration->begin("battery", false);
+        anchor->configuration->putFloat("charge", p.toFloat());
+        S.printf("Charge is %.1f mAh\n\r", anchor->configuration->getFloat("charge"));
+        anchor->configuration->end();
+    } else {
+        S.println("Erreur charge batterie");
     }
 }
 
