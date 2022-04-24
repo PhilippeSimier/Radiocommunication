@@ -8,9 +8,9 @@
 #include "Menu.h"
 
 Menu::Menu() :
-    con(new Console()),
-    configuration(new Preferences()) 
-{
+exitFlag(false),
+con(new Console()),
+configuration(new Preferences()) {
     anchor = this;
 }
 
@@ -58,8 +58,23 @@ void Menu::setup() {
     con->onCmd("freq", _frequence_);
     con->onCmd("show", _config_);
     con->onCmd("charge", _charge_);
+    con->onCmd("fec", _fec_);
+    con->onCmd("raz", _raz_);
     con->onUnknown(_unknown);
     con->start();
+
+    anchor->configuration->begin("radio", false);
+    if (anchor->configuration->getBool("config", false) == false) {
+        anchor->configuration->putString("srcCallsign", "F4KMN-13");
+        anchor->configuration->putString("dstCallsign", "F4KMN-1");
+        anchor->configuration->putString("path1", "WIDE1-1");
+        anchor->configuration->putString("path2", "WIDE2-2");
+        anchor->configuration->putFloat("frequence", 144.800);
+        anchor->configuration->putBool("fec", false);
+        anchor->configuration->putBool("config", true);
+    }
+    anchor->configuration->end();
+    this->run();
 }
 
 void Menu::_exit_(ArgList& L, Stream& S) {
@@ -75,7 +90,9 @@ void Menu::_help_(ArgList& L, Stream& S) {
     S.println(F("Set  Path2           : path2 WIDE2-2"));
     S.println(F("Set  Frequence       : freq 144.800"));
     S.println(F("Set  Charge (mAh)    : charge 2000"));
+    S.println(F("Enable/disable FEC   : fec 1"));
     S.println(F("Show configuration   : show"));
+    S.println(F("RAZ                  : raz"));
     S.println(F("Exit menu            : exit"));
 }
 
@@ -163,6 +180,7 @@ void Menu::_config_(ArgList& L, Stream& S) {
     S.printf("Path1           : %s\n\r", anchor->configuration->getString("path1").c_str());
     S.printf("Path2           : %s\n\r", anchor->configuration->getString("path2").c_str());
     S.printf("Frequence (MHz) : %.3f\n\r", anchor->configuration->getFloat("frequence"));
+    S.printf("FEC             : %s\n\r", anchor->configuration->getBool("fec") ? "Enable" : "Disable");
     anchor->configuration->end();
     anchor->configuration->begin("battery", false);
     S.printf("Charge (mAh)    : %.1f\n\r", anchor->configuration->getFloat("charge"));
@@ -199,6 +217,29 @@ void Menu::_charge_(ArgList& L, Stream& S) {
     } else {
         S.println("Erreur charge batterie");
     }
+}
+
+void Menu::_fec_(ArgList& L, Stream& S) {
+
+    String p;
+    p = L.getNextArg();
+
+    if (anchor->acceptCmd(p, 1, 1)) {
+
+        anchor->configuration->begin("radio", false);
+        anchor->configuration->putBool("fec", (int8_t) p.toInt());
+        S.printf("FEC is : %s\n\r", anchor->configuration->getBool("fec") ? "Enable" : "Disable");
+        anchor->configuration->end();
+    } else {
+        S.println("Erreur fec");
+    }
+}
+
+void Menu::_raz_(ArgList& L, Stream& S) {
+    anchor->configuration->begin("radio", false);
+    anchor->configuration->putBool("config", false);
+    anchor->configuration->clear();
+    ESP.restart();
 }
 
 Menu* Menu::anchor = NULL;

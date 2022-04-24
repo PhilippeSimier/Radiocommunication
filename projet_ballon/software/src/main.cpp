@@ -125,10 +125,10 @@ void setup() {
     led = new Led;
     led->allumer(ROUGE); // rouge
     afficheur = new Afficheur;
-    leMenu = new Menu;
-    leMenu->setup();
-    leMenu->run();
     
+    afficheur->afficher("Menu configuration"); 
+    leMenu = new Menu;  // Menu de configuration
+    leMenu->setup();
     
     afficheur->afficher("Erreur Battery"); // test de la carte battery
     laBatterie = new Battery(3000); //  instanciation d'une batterie de capacité 3000 mAh
@@ -210,7 +210,7 @@ void setup() {
                 configuration.getString("path1", "WIDE1-1").c_str(), 
                 configuration.getString("path2", "WIDE2-2").c_str());
     
-    fx25->setFec(true); // La trame Ax25 est encapsulée dans une trame Fec
+    fx25->setFec(configuration.getBool("fec")); // La trame Ax25 est encapsulée dans une trame Fec
     configuration.end();
     
     afficheur->afficher("Setup done");
