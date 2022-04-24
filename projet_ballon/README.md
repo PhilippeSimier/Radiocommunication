@@ -9,8 +9,10 @@ La  construction d'une nacelle expérimentale de ballon doit permettre aux jeune
  - Dans quelle mesure l'atmosphère nous protège t-elle du [rayonnement cosmiques](https://www.sievert-system.org/#Rayonnement)   ?
 
 Le rayonnement cosmique est formé de particules qui se déplacent à une vitesse proche de celle de la lumière. Il est constitué de deux composantes, l’une stable, d’origine galactique, l’autre plus fluctuante, liée à l’activité du soleil.
+Pour le comprendre, commençons par l'espace lointain. Les rayons cosmiques sont essentiellement des débris subatomiques d'étoiles mourantes, accélérés à une vitesse proche de la lumière par des explosions de supernova. Ils voyagent à travers l'espace et s'approchent de la Terre
+dans toutes les directions, bombardant notre planète 24h/24 et 7j/7.
+Lorsque les rayons cosmiques s'écrasent dans l'atmosphère terrestre, ils produisent un jet de particules secondaires et de photons qui est le plus intense à l'entrée de la stratosphère. Les physiciens Eric Regener et Georg Pfotzer ont découvert ce maximum en utilisant des ballons dans les années 1930 et c'est ce que nous allons vérifier aujourd'hui.
 
-Les sources de **rayonnement gamma** dans l'Univers sont connues depuis 1948 mais n'ont été observées que depuis le début des années 1960. En effet, les photons gamma sont presque complètement arrêtés par l'atmosphère terrestre. Les premières observations astronomiques ont été faites à partir de ballons-sondes.
 |Altitude (m)|  Débit de dose (μSv/h)|
 |--|--|
 |80  | 0.08 |
@@ -20,6 +22,10 @@ Les sources de **rayonnement gamma** dans l'Univers sont connues depuis 1948 mai
 |11200  | 7.7 |
 
  [Unité de mesures](https://www.sievert-system.org/#Mesure)
+
+Lors du vol, le ballon traverse une couche appelée le Regener-Pfotzer Maximum, une couche de rayonnement maximal à environ 20 km au-dessus de la surface de la Terre. Ce graphique de rayonnement en fonction du temps pris lors d'un vol en ballon en juillet 2015 illustre le pic :
+
+![Ionizing_Radiation](/projet_ballon/images/Ionizing_Radiation.png)
 
 ## Principe de la mesure rayonnement ionisant
 

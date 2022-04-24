@@ -315,7 +315,7 @@ void Rs::hex_dump(uint8_t *p, int len) {
         for (i = 0; i < n; i++) {
             Serial.printf("%c", isprint(p[i]) ? p[i] : '.');
         }
-        Serial.printf("\r");
+        Serial.printf("\n\r");
         p += 16;
         offset += 16;
         len -= 16;
