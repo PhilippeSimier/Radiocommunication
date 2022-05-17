@@ -18,6 +18,10 @@
  * 
  * Bibliothèque : BME280 @ 3.0.0
  * installation : pio lib -g install 901
+ *      Modifier la bibliothèque 901 fichier BME280.cpp
+ *      ajouter return true aux methodes
+ *        bool BME280::InitializeFilter() 
+ *        bool BME280::WriteSettings()
  * 
  * Bibliothèque : RadiationWatch @ 0.6.4 
  * installation : pio lib -g install 1523
@@ -118,7 +122,7 @@ float offsetThermo = 1.0;
 void setup() {
 
     Serial.begin(115200);
-    serialGps.begin(4800, SERIAL_8N1, 16, 17); // première carte 16 17)
+    serialGps.begin(4800, SERIAL_8N1, 17, 16); // première carte 16 17)
     pinMode(34, INPUT); // BP en entrée
     digitalWrite(2, LOW); // extinction des led sur GPIO2
 
@@ -224,7 +228,7 @@ void loop() {
             data.humidite,
             BME280::TempUnit_Celsius,
             BME280::PresUnit_hPa);
-
+    
     data.tempInt = CapteurLM75A.getTemperature(); // Lecture du capteur LM75A
     data.tempExt = thermocouple.readTempC() + offsetThermo; // Leture du thermocouple
     data.uSvh = radiationWatch.uSvh(); // Lecture de la dose de radiation
