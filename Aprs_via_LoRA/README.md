@@ -20,7 +20,7 @@ La solution repose sur l’utilisation de modules ttgo du constructeur  LILYGO®
 
 ## LILYGO® TTGO T-Beam V1.1
 
-![Schéma](/Aprs_via_LoRA/images/LILYGO® TTGO T-Beam V1.1.png)
+![Schéma](/Aprs_via_LoRA/images/LILYGO_TTGO_T_Beam.png)
  - ESP32
  - Écran OLED de 0.96 pouces (résolution : 128x64)
  - GPS avec une led indicant la réception
