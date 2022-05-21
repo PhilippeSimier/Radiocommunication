@@ -26,13 +26,23 @@ WIFI & Bluetooth & LoRa & GPS
 | ![Schéma](/Aprs_via_LoRA/images/LILYGO_TTGO_T_Beam.png)  |  ESP32 - Écran OLED de 0.96 pouces (résolution : 128x64)  - GPS avec une led indicant la réception - Puissance maximum en émission : + 20dBm Mode de modulation :  LoRa  |
 
 ## Gateway 
-LILYGO® TTGO ESP32-LoRa32 T3_V1.6.1 
+**LILYGO® TTGO ESP32-LoRa32 T3_V1.6** 
 |  |  |
 |--|--|
 | ![Schéma](/Aprs_via_LoRA/images/LILYGO_TTGO_ESP32-LoRa32.png)  | frequence: **433/470MHz**(433HMz version) puissance d'émission: +20dBm sensibilité :-139dBm@LoRa &62.5Khz&SF=12&146bps |
 
+## Installation des logiciels
 
+Les logiciels sont disponibles sur F4G0H. L'installation peut être directement faite à partir du navigateur ***Google Chrome*** ou ***Microsoft Edge***.
+Automatic installation [firmwares](https://f4goh.github.io/lora-aprs-esp32/index.html)
 
-
-
+ - Connectez le tracker à votre ordinateur à l'aide d'un câble USB.
+ - Vous devez commencer par installer  le programme **Reset** GPS. Après le téléchargement, le  TTGO T-Beam va redémarrer automatiquement.
+ - Ouvrir  Putty, configurer la vitesse sur **115200** et serial line   sur **/dev/ttyACM0**
+ - Laisser le programme fonctionner jusqu'à obtenir des trames de position NMEA sur  l'écran.
+ - Vous pouvez maintenant installer le logiciel **tracker**
+ - Ouvrir putty juste après le démarrage du programme appuyer sur la touche m pour entrer dans le menu de configuration. Saisir **help** pour obtenir les commande disponibles.
+ - Configurer l'identifiant du tracker.
+ - Pour quitter la configuration taper **exit** 
+ - Même procédure pour l'installation du programme Igate Wifi
 
