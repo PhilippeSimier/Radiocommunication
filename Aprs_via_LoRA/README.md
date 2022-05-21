@@ -19,10 +19,13 @@ Les trackers  envoient leurs trames à une (ou plusieurs) **gateway**(s)  qui fa
 La solution repose sur l’utilisation de modules ttgo du constructeur  LILYGO®.
 
 ## LILYGO® TTGO T-Beam V1.1
+|  |  |
+|--|--|
+| ![Schéma](/Aprs_via_LoRA/images/LILYGO_TTGO_T_Beam.png)  |  ESP32 - Écran OLED de 0.96 pouces (résolution : 128x64)  - GPS avec une led indicant la réception - Puissance maximum en émission : + 20dBm Mode de modulation :  LoRa  |
 
-![Schéma](/Aprs_via_LoRA/images/LILYGO_TTGO_T_Beam.png)
- - ESP32
- - Écran OLED de 0.96 pouces (résolution : 128x64)
- - GPS avec une led indicant la réception
- - Puissance maximum en émission : + 20dBm Mode de modulation :  **LoRa**  
+
+
+
+
+
 
