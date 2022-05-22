@@ -72,7 +72,7 @@ ou sur le site https://aprs-map.info/
 ![aprs-map.info](/projet_ballon/images/Capture_aprs-map.info.png)
 
 ## La télémétrie
-![aprs.fi](/projet_ballon/images/Capture_aprs.fi.png)
+![aprs.fi](/projet_ballon/images/Capture_aprs.fi_position.png)
 
 La télémétrie permet de suivre la charge de la batterie, les températures intérieur et extérieur, le nombre par minute de rayons cosmiques. 
 
