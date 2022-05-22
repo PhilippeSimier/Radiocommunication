@@ -63,13 +63,18 @@ Tout  au  long  du  vol,  les  mesures  sont  enregistrées à bord sur une cart
 ### Le suivi de la trajectoire de vol 
 
 Afin de faciliter la récupération de la nacelle, le système de télémesures est équipé d’un récepteur GPS pouvant fonctionner en haute altitude.
-le suivi du vol est effectué par transmission de la position dans des trames **APRS** encapsulé dans des trames **FX25**. la position du ballon peut être suivie sur le site https://aprs.fi/
+le suivi du vol est effectué par transmission de la position dans des trames **APRS** encapsulé dans des trames **FX25**.  La position du ballon ainsi que la télémétrie peuvent être suivie en temps réel sur le site https://aprs.fi/
 
 ![aprs.fi](/projet_ballon/images/Capture_aprs.fi.png)
 
 ou sur le site https://aprs-map.info/
 
 ![aprs-map.info](/projet_ballon/images/Capture_aprs-map.info.png)
+
+## La télémétrie
+![aprs.fi](/projet_ballon/images/Capture_aprs.fi.png)
+
+La télémétrie permet de suivre la charge de la batterie, les températures intérieur et extérieur, le nombre par minute de rayons cosmiques. 
 
 ## Principe
 Le ballon s’élève dans l’atmosphère grâce à la **poussée d’Archimède**. Plus il monte, plus la pression de l’air autour de lui, diminue. L’hélium occupe alors de plus en plus de volume : le ballon se dilate et finit par éclater.
