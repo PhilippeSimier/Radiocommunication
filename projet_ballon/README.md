@@ -37,6 +37,13 @@ Les détecteurs basés sur **l'absorption directe dans le silicium** constituent
 le capteur utilisé possède une photodiode PIN **[X100-7](https://www.first-sensor.com/cms/upload/datasheets/X100-7_THD_5000040.pdf)** pour la détection des rayons ionisants, ayant une surface de section efficace à grande échelle (100 mm ^ 2), fabriquée par la société **FirstSensor** qui a également fourni un capteur similaire pour le télescope à rayons X de la NASA. En règle générale, l'efficacité du capteur à photodiode PIN est extrêmement stable et ne présente aucune dégradation liée à l'âge.
 La détection et l’électronique qui l'entoure est là pour amplifier le signal et le transmettre avec des niveaux adaptés vers un entrée digital de l'ESP32. On obtient le débit de dose par comptage des impulsions sur une periode donnée.
 
+### Principe
+Le ballon s’élève dans l’atmosphère grâce à la **poussée d’Archimède**. Plus il monte, plus la pression de l’air autour de lui, diminue. L’hélium occupe alors de plus en plus de volume : le ballon se dilate et finit par éclater.
+
+A ce moment, la chaîne de vol redescend vers la terre. Le parachute inséré initialement «  en sapin  » entre l’enveloppe du ballon et le réflecteur radar, joue alors son rôle de frein.
+
+La durée totale du vol se situe entre 2 et 4 heures. **Planète Sciences** se charge de la demande d’autorisation de vol auprès des autorités. 
+
 ### La Nacelle
 Pendant le vol, les capteurs seront intégrés dans la Nacelle  qui assurera les fonctions de plate-forme : intégration mécanique, isolation et contrôle thermique, localisation/datation des observations, fourniture de l’énergie grâce à des panneaux solaires et batteries.
 La nacelle devra être capable de fonctionner de manière autonome pendant 4 heures, en environnement stratosphérique (pression 50-70 hPa, température environ -80°C).
@@ -55,7 +62,7 @@ L’ensemble des cartes électroniques ont le même format et sont fixées au co
 
 ![Carte de télémesures](/projet_ballon/images/carte_télémesures_2.jpg)
 
-Tout  au  long  du  vol,  les  mesures  sont  enregistrées à bord sur une carte SD. elles  sont aussi envoyées au sol par l'émetteur embarqué.
+Tout  au  long  du  vol,  les  mesures  sont  enregistrées à bord sur une carte SD. elles  sont aussi envoyées au sol par les émetteurs embarqués (APRS LORA et SIGFOX).
 
 
 ![Carte de télémesures](/projet_ballon/images/carte_télémesures.jpg)
@@ -63,7 +70,10 @@ Tout  au  long  du  vol,  les  mesures  sont  enregistrées à bord sur une cart
 ### Le suivi de la trajectoire de vol 
 
 Afin de faciliter la récupération de la nacelle, le système de télémesures est équipé d’un récepteur GPS pouvant fonctionner en haute altitude.
-le suivi du vol est effectué par transmission de la position dans des trames **APRS** encapsulé dans des trames **FX25**.  La position du ballon ainsi que la télémétrie peuvent être suivie en temps réel sur le site https://aprs.fi/
+Le suivi du vol est effectué par transmission de la position dans des trames **APRS** encapsulé dans des trames **FX25** et **LoRa**.  
+La position est également transmise sur le réseau **SIGFOX**.
+
+La position du ballon ainsi que la télémétrie peuvent être suivie en temps réel sur le site https://aprs.fi/
 
 ![aprs.fi](/projet_ballon/images/Capture_aprs.fi.png)
 
@@ -72,17 +82,10 @@ ou sur le site https://aprs-map.info/
 ![aprs-map.info](/projet_ballon/images/Capture_aprs-map.info.png)
 
 ## La télémétrie
+
 ![aprs.fi](/projet_ballon/images/Capture_aprs.fi_position.png)
 
 La télémétrie permet de suivre la charge de la batterie, les températures intérieur et extérieur, le nombre par minute de rayons cosmiques. 
-
-## Principe
-Le ballon s’élève dans l’atmosphère grâce à la **poussée d’Archimède**. Plus il monte, plus la pression de l’air autour de lui, diminue. L’hélium occupe alors de plus en plus de volume : le ballon se dilate et finit par éclater.
-
-A ce moment, la chaîne de vol redescend vers la terre. Le parachute inséré initialement «  en sapin  » entre l’enveloppe du ballon et le réflecteur radar, joue alors son rôle de frein.
-
-La durée totale du vol se situe entre 2 et 4 heures. **Planète Sciences** se charge de la demande d’autorisation de vol auprès des autorités. 
-
 
 ## Les contraintes
 
@@ -90,7 +93,7 @@ La durée totale du vol se situe entre 2 et 4 heures. **Planète Sciences** se c
 
  2. L'alimentation de la chaîne de mesure doit posséder une autonomie supérieure à 4 heures.
 
- 3. Le système utilise un transmetteur radio, la fréquence d'émission est accordée sur 144800 Mhz. l’Equipe du projet dispose d’une station de réception au sol adaptée. Le système est composé d'une clé SDR connecté à un Raspberry pi. Le logiciel DireWolf décode les trames reçues et les retransmet sur un des serveurs aprs.  Sur la nacelle, une antenne du type "Ground plane" rayonne. Le brin central est vertical et orienté vers le bas.
+ 3. La localisation se fait alors par l'écoute d'une des _fréquences_ utilisées par  _Planète Sciences_ ( 137.05 MHz ).
  
  
 
