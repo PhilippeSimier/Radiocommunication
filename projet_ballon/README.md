@@ -70,7 +70,7 @@ Tout  au  long  du  vol,  les  mesures  sont  enregistrées à bord sur une cart
 ### Le suivi de la trajectoire de vol 
 
 Afin de faciliter la récupération de la nacelle, le système de télémesures est équipé d’un récepteur GPS pouvant fonctionner en haute altitude.
-Le suivi du vol est effectué par transmission de la position dans des trames **APRS** encapsulé dans des trames **FX25** et **LoRa**.  
+Le suivi du vol est effectué par transmission de la position dans des trames **APRS** encapsulé dans des trames **FX25** et aussi **LoRa**.  
 La position est également transmise sur le réseau **SIGFOX**.
 
 La position du ballon ainsi que la télémétrie peuvent être suivie en temps réel sur le site https://aprs.fi/
