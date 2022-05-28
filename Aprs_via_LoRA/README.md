@@ -37,7 +37,7 @@ L'installation du driver CH9102 pour windows est disponible sur le site de [lily
 après avoir lancé l'exécution du fichier  CH9102_WIN.EXE  vous pouvez connecter votre TTGO ESP32-LoRa32. 
 Ouvrir le gestionnaire de périphérique pour constater le bon fonctionnement du driver.
 
-[Driver](/Aprs_via_LoRA/images/Driver_for_win7.PNG)
+[Driver](/Aprs_via_LoRA/images/Driver_for_win7.png)
 
 
 ## Installation des logiciels
