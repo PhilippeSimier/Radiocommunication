@@ -35,7 +35,7 @@ WIFI & Bluetooth & LoRa & GPS
 
 L'installation du driver CH9102 pour windows est disponible sur le site de [lilyGO](https://github.com/Xinyuan-LilyGO/CH9102_Driver). 
 après avoir lancé l'exécution du fichier  CH9102_WIN.EXE  vous pouvez connecter votre TTGO ESP32-LoRa32. 
-Ouvrir le gestionnaire de périphérique pour constater le bon fonctionnement du driver.
+Ouvrir le gestionnaire de périphériques pour constater le bon fonctionnement du driver.
 
 ![Driver](/Aprs_via_LoRA/images/Driver_for_windows.png)
 
