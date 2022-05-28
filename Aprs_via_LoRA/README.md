@@ -31,9 +31,18 @@ WIFI & Bluetooth & LoRa & GPS
 |--|--|
 | ![Schéma](/Aprs_via_LoRA/images/LILYGO_TTGO_ESP32-LoRa32.png)  | frequence: **433/470MHz**(433HMz version) puissance d'émission: +20dBm sensibilité :-139dBm@LoRa &62.5Khz&SF=12&146bps |
 
+## Installation du driver pour ttgo
+
+L'installation du driver CH9102 pour windows est disponible sur le site de [lilyGO](https://github.com/Xinyuan-LilyGO/CH9102_Driver). 
+après avoir lancé l'exécution du fichier  CH9102_WIN.EXE  vous pouvez connecter votre TTGO ESP32-LoRa32. 
+Ouvrir le gestionnaire de périphérique pour constater le bon fonctionnement du driver.
+
+[Driver](/Aprs_via_LoRA/images/Driver_for_win7.PNG)
+
+
 ## Installation des logiciels
 
-Les logiciels sont disponibles sur F4G0H. L'installation peut être directement faite à partir du navigateur ***Google Chrome*** ou ***Microsoft Edge***.
+Les logiciels compilés sont disponibles sur F4G0H. L'installation peut être directement être faite à partir du navigateur ***Google Chrome*** ou ***Microsoft Edge***.
 Automatic installation [firmwares](https://f4goh.github.io/lora-aprs-esp32/index.html)
 
  - Connectez le tracker à votre ordinateur à l'aide d'un câble USB.
