@@ -4,6 +4,8 @@
 Le projet est de réaliser un **traqueur APRS** (TX UHF) ainsi qu'une **passerelle** (RX) qui va renvoyer les informations reçues sur le serveur aprs.fi. 
 Les objectifs  sont, entre autres, une faible consommation d’énergie et une longue portée  entre le tracker et la passerelle (15 km environ).
 
+![aprs.fi](/Aprs_via_LoRA/images/Lora_Aprs.png)
+
 ## Principe
 Le principe  est de transmettre les données de position par liaison radio  à faible puissance d’émission,  fonctionnant en autonomie sur une petite batterie au format 18650. 
 Les trackers  envoient leurs trames à une (ou plusieurs) **gateway**(s)  qui fait office de relais entre les trackers qui sont dans le rayon de couverture et le serveur de stockage et de traitement de données  aprs.fi.
@@ -54,4 +56,6 @@ Automatic installation [firmwares](https://f4goh.github.io/lora-aprs-esp32/index
  - Configurer l'identifiant du tracker.
  - Pour quitter la configuration taper **exit** 
  - Même procédure pour l'installation du programme Igate Wifi
+
+![Logo_Touchard](/Aprs_via_LoRA/images/logo_touchard.png)
 
