@@ -7,12 +7,14 @@ Les objectifs  sont, entre autres, une faible consommation d’énergie et une l
 ![aprs.fi](/Aprs_via_LoRA/images/Lora_Aprs.png)
 
 ## Principe
-Le principe  est de transmettre les données de position par liaison radio  à faible puissance d’émission,  fonctionnant en autonomie sur une petite batterie au format 18650. 
-Les trackers  envoient leurs trames à une (ou plusieurs) **gateway**(s)  qui fait office de relais entre les trackers qui sont dans le rayon de couverture et le serveur de stockage et de traitement de données  aprs.fi.
 
- - **LoRa** est une technologie de modulation du signal radio qui permet la transmission de données. (Couche physique 1 du modèle OSI).
- - **APRS** est un protocole de couche liaison de données qui définit des trames avec des adresses source et destination (appellé aussi indicatifs source et destination). 
- - **APRS** est aussi un protocole de couche application. Ce protocole définit entre autres les trames position weather.
+Le mécanisme d’échange de données est le suivant  : toutes les passerelles du réseau sont  
+positionnées en mode « écoute », et dès  qu’un tracker situé dans leur champ de détection   transmet une donnée, elles reçoivent toutes la donnée qu’elles retransmettent au serveur  de stockage et de traitement de données  aprs.fi, en y  ajoutant une information de niveau de réception de la donnée appelé  RSSI  (Received  Signal  Strenght  Indication)
+
+ - La technologie  **LoRa**, aussi parfois appelée  LoRa RF,  désigne l’interface radio  du réseau de  communications sans fil (couche  physique), alors que l’appellation  LoRaWAN, parfois désignée  également par le terme  LoRa MAC  désigne le protocole de communication.
+ 
+
+ - **APRS** est un protocole de couche application qui définit des trames avec des adresses source et destination (appellé aussi indicatifs source et destination). Ce protocole définit entre autres les trames position weather.
 
 ![Schéma](/Aprs_via_LoRA/images/Aprs_via_LoRA.png)
 
